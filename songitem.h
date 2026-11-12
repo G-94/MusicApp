@@ -1,0 +1,56 @@
+#ifndef SONGITEM_H
+#define SONGITEM_H
+
+#include <QObject>
+#include <QString>
+#include <QDebug>
+
+#include "helperfunctions.h"
+
+namespace Song {
+class SongItem;
+}
+
+class SongItem : public QObject
+{
+    Q_OBJECT
+public:
+    explicit SongItem(
+        QString author,
+        QString title,
+        QString source_url,
+        QString img_url,
+        QString id,
+        QString duration
+    ) noexcept;
+
+    QString& getTitle() noexcept;
+    QString& getAuthor() noexcept;
+    QString& getTextDuration() noexcept;
+    quint16 getDuration() const noexcept;
+    quint32 getId() const noexcept;
+    QString& getSourceUrl() noexcept;
+    QString& getImgUrl() noexcept;
+
+private:
+
+// song meta data
+    QString title_;
+    QString author_;
+
+    quint16 duration_;
+    QString text_duration_;
+
+    quint32 id_;
+
+// song source data
+    QString source_img_url_;
+    QString source_url_;
+
+//init success flag
+    bool isSuccess;
+
+signals:
+};
+
+#endif // SONGITEM_H

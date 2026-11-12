@@ -10,6 +10,10 @@ qt_add_executable(MusicApp
     main.cpp
     mainwindow.cpp
     mainwindow.h
+    musicapi.h musicapi.cpp
+    songitem.h songitem.cpp
+    config.h
+    helperfunctions.h helperfunctions.cpp
 )
 
 target_link_libraries(MusicApp
