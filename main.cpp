@@ -1,11 +1,13 @@
-#include "mainwindow.h"
-
 #include <QApplication>
+
+#include "musicapi.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+
+    Api::MusicApi m;
+    m.getSongsByQuery("скучаю");
+
     return QApplication::exec();
 }

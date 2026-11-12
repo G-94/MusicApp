@@ -8,12 +8,9 @@
 #include "helperfunctions.h"
 
 namespace Song {
-class SongItem;
-}
 
-class SongItem : public QObject
+class SongItem
 {
-    Q_OBJECT
 public:
     explicit SongItem(
         QString author,
@@ -52,5 +49,7 @@ private:
 
 signals:
 };
+
+}
 
 #endif // SONGITEM_H

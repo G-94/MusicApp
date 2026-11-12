@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.19)
 project(MusicApp LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
+# 1. Добавляем Network в список компонентов
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network)
 
 qt_standard_project_setup()
 
@@ -14,12 +15,15 @@ qt_add_executable(MusicApp
     songitem.h songitem.cpp
     config.h
     helperfunctions.h helperfunctions.cpp
+    appexceptions.h appexceptions.cpp
 )
 
+# 2. Линкуем с Qt6::Network
 target_link_libraries(MusicApp
     PRIVATE
-        Qt::Core
-        Qt::Widgets
+        Qt6::Core
+        Qt6::Widgets
+        Qt6::Network
 )
 
 install(TARGETS MusicApp
