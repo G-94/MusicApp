@@ -33,7 +33,8 @@ using SongsVectorPtr = std::shared_ptr<QVector<Song::SongItem>>;
 
 enum EMIT_TYPE {
     QUERY,
-    GENRE
+    GENRE,
+    COLLECTION
 };
 
 class MusicApi : public QObject
@@ -43,16 +44,18 @@ public:
     explicit MusicApi(QObject *parent = nullptr);
 
     void getSongsByQuery(const QString& query, bool onlyOnePage = false);
-    void getSongsByGenre(int genre, bool onlyOnePage = false);
+    void getSongsByGenre(QString genre, bool onlyOnePage = false);
+    void getSongsCollection(QString collection);
 
 private:
 
-    QNetworkAccessManager* manager;
+    QNetworkAccessManager* manager_;
 
 signals:
 
     void songsByQueryLoaded(std::shared_ptr<QVector<Song::SongItem>> result);
     void songsByGenreLoaded(std::shared_ptr<QVector<Song::SongItem>> result);
+    void songsCollectionLoaded(std::shared_ptr<QVector<Song::SongItem>> result);
 
     void loadingSongsFailed(QString msg);
 
@@ -67,6 +70,10 @@ private:
 
     //choose signal for songs query
     void chooseSignalSongList(EMIT_TYPE type, SongsVectorPtr arg);
+
+private:
+
+    bool checkUrl(const QUrl& url);
 
 };
 

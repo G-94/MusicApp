@@ -15,9 +15,17 @@ int main(int argc, char *argv[])
     //     }
     // });
 
-    m.getSongsByGenre(51);
+    // m.getSongsByGenre("51");
 
-    QObject::connect(&m, &Api::MusicApi::songsByGenreLoaded, [] (std::shared_ptr<QVector<Song::SongItem>> res) {
+    // QObject::connect(&m, &Api::MusicApi::songsByGenreLoaded, [] (std::shared_ptr<QVector<Song::SongItem>> res) {
+    //     for (auto el : *res) {
+    //         qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
+    //     }
+    // });
+
+    m.getSongsCollection("10181");
+
+    QObject::connect(&m, &Api::MusicApi::songsCollectionLoaded, [] (std::shared_ptr<QVector<Song::SongItem>> res) {
         for (auto el : *res) {
             qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
         }

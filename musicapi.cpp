@@ -1,7 +1,7 @@
 #include "musicapi.h"
 
 Api::MusicApi::MusicApi(QObject *parent)
-    : QObject{parent}, manager{new QNetworkAccessManager(this)}
+    : QObject{parent}, manager_{new QNetworkAccessManager(this)}
 {}
 
 // for QStringView Literals
@@ -13,28 +13,33 @@ void Api::MusicApi::getSongsByQuery(const QString &query, bool onlyOnePage)
     QUrl url(HTTP_Literals::QUERY_BASE + HTTP_Literals::PAGE_BASE + "---");
     url.setQuery(QUrlQuery{{"q", query}});
 
-    if (not url.isValid()) {
-        emit loadingSongsFailed("InvalidUrl");
-        return;
-    }
+    if (not checkUrl(url)) return;
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
 
     fetchPage(url, accumulator, 0, QUERY, onlyOnePage);
 }
 
-void Api::MusicApi::getSongsByGenre(int genre, bool onlyOnePage)
+void Api::MusicApi::getSongsByGenre(QString genre, bool onlyOnePage)
 {
-    QUrl url(HTTP_Literals::GENRE_BASE + QString::number(genre) + HTTP_Literals::PAGE_BASE + "---");
+    QUrl url(HTTP_Literals::GENRE_BASE + genre + HTTP_Literals::PAGE_BASE + "---");
 
-    if (not url.isValid()) {
-        emit loadingSongsFailed("InvalidUrl");
-        return;
-    }
+    if (not checkUrl(url)) return;
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
 
     fetchPage(url, accumulator, 0, GENRE, onlyOnePage);
+}
+
+void Api::MusicApi::getSongsCollection(QString collection)
+{
+    QUrl url(HTTP_Literals::COLLECTION_BASE + collection);
+
+    if (not checkUrl(url)) return;
+
+    std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
+
+    fetchPage(url, accumulator, 0, COLLECTION, true);
 }
 
 // parse blocks of song data html, change accumulator
@@ -48,18 +53,18 @@ void Api::MusicApi::parseSongsFromPage(const QList<QStringView> &songs_blocks,
             qsizetype(qstrlen("\"track__fulltime\">")));
 
         QString song_duration = dur_start.left(
-                                             dur_start.indexOf(u"</div>"_sv)
-                                             ).toString();
+            dur_start.indexOf(u"</div>"_sv)
+        ).toString();
 
         //get song data text
         QStringView song_data_start = block.mid(
             block.indexOf(u"data-musmeta=\'"_sv) +
             qsizetype(qstrlen("data-musmeta='"))
-            );
+        );
 
         QStringView song_data_text = song_data_start.left(
             song_data_start.indexOf(u"\'>"_sv)
-            );
+        );
 
         QJsonObject data = Helper::parseJsonStr(QString(song_data_text));
 
@@ -79,10 +84,13 @@ void Api::MusicApi::parseSongsFromPage(const QList<QStringView> &songs_blocks,
 void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator,
     int page, EMIT_TYPE type, bool onlyOne)
 {
-    url = QUrl(url.toString().replace("---", QString::number(page)));
+    // change empty part of string to insert page counter
+    if (type != COLLECTION) {
+        url = QUrl(url.toString().replace("---", QString::number(page)));
+    }
 
     QNetworkRequest request(url);
-    QNetworkReply* reply = manager->get(request);
+    QNetworkReply* reply = manager_->get(request);
 
     QObject::connect(reply, &QNetworkReply::finished, [this, reply, url,
             accumulator, page, onlyOne, type]() {
@@ -108,7 +116,7 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
         // parse blocks of song data html, change accumulator
         parseSongsFromPage(songs_blocks, accumulator);
 
-        if (page + HTTP_Literals::PAGE_STEP > 480 or onlyOne) {
+        if (onlyOne or page + HTTP_Literals::PAGE_STEP > 480) {
             chooseSignalSongList(type, accumulator);
             return;
         }
@@ -136,8 +144,20 @@ void Api::MusicApi::chooseSignalSongList(EMIT_TYPE type, std::shared_ptr<QVector
     case GENRE:
         emit songsByGenreLoaded(arg);
         break;
+    case COLLECTION:
+        emit songsCollectionLoaded(arg);
+        break;
     default:
         emit loadingSongsFailed("EmitError");
         break;
     }
+}
+
+bool Api::MusicApi::checkUrl(const QUrl &url)
+{
+    if (not url.isValid()) {
+        emit loadingSongsFailed("InvalidUrl");
+        return false;
+    }
+    return true;
 }
