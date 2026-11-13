@@ -9,6 +9,7 @@
     id_ is used to find track
     duration_ what integer type used for play tracks
     source_img_ is unused but maybe will be need in future
+    is_playable_ is variable what show state of song
 
 -------------------------------------------------------------------------
 
@@ -44,6 +45,7 @@ public:
     quint32 getId() const noexcept;
     QString& getSourceUrl() noexcept;
     QString& getImgUrl() noexcept;
+    bool isPlayable() const noexcept;
 
 private:
 
@@ -59,6 +61,9 @@ private:
 // song source data
     QString source_img_url_;
     QString source_url_;
+
+// state of song
+    bool is_playable_ = true;
 
 //init success flag
     bool isSuccess;

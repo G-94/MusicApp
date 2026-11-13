@@ -23,7 +23,6 @@ void Api::MusicApi::getSongsByQuery(const QString &query, bool onlyOnePage)
 void Api::MusicApi::getSongsByGenre(QString genre, bool onlyOnePage)
 {
     QUrl url(HTTP_Literals::GENRE_BASE + genre + HTTP_Literals::PAGE_BASE + "---");
-
     if (not checkUrl(url)) return;
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
@@ -31,15 +30,34 @@ void Api::MusicApi::getSongsByGenre(QString genre, bool onlyOnePage)
     fetchPage(url, accumulator, 0, GENRE, onlyOnePage);
 }
 
-void Api::MusicApi::getSongsCollection(QString collection)
+void Api::MusicApi::getSongsByArtist(QString artist_id, bool onlyOnePage)
 {
-    QUrl url(HTTP_Literals::COLLECTION_BASE + collection);
+    QUrl url(HTTP_Literals::ARTISTS_BASE + artist_id + HTTP_Literals::PAGE_BASE + "---");
+    if (not checkUrl(url)) return;
 
+    std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
+
+    fetchPage(url, accumulator, 0, ARTIST, onlyOnePage);
+}
+
+void Api::MusicApi::getSongsCollection(QString collection_id)
+{
+    QUrl url(HTTP_Literals::COLLECTION_BASE + collection_id);
     if (not checkUrl(url)) return;
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
 
     fetchPage(url, accumulator, 0, COLLECTION, true);
+}
+
+void Api::MusicApi::getSongsAlbum(QString album_id)
+{
+    QUrl url(HTTP_Literals::ALBUM_BASE + album_id);
+    if (not checkUrl(url)) return;
+
+    std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
+
+    fetchPage(url, accumulator, 0, ALBUM, true);
 }
 
 // parse blocks of song data html, change accumulator
@@ -82,10 +100,10 @@ void Api::MusicApi::parseSongsFromPage(const QList<QStringView> &songs_blocks,
 
 // get songs from pages
 void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator,
-    int page, EMIT_TYPE type, bool onlyOne)
+    int page, EMIT_SONGS_TYPE type, bool onlyOne)
 {
     // change empty part of string to insert page counter
-    if (type != COLLECTION) {
+    if (type != COLLECTION and type != ALBUM) {
         url = QUrl(url.toString().replace("---", QString::number(page)));
     }
 
@@ -135,7 +153,7 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
 }
 
 //choose signal for songs query
-void Api::MusicApi::chooseSignalSongList(EMIT_TYPE type, std::shared_ptr<QVector<Song::SongItem>> arg)
+void Api::MusicApi::chooseSignalSongList(EMIT_SONGS_TYPE type, std::shared_ptr<QVector<Song::SongItem>> arg)
 {
     switch (type) {
     case QUERY:
@@ -144,8 +162,14 @@ void Api::MusicApi::chooseSignalSongList(EMIT_TYPE type, std::shared_ptr<QVector
     case GENRE:
         emit songsByGenreLoaded(arg);
         break;
+    case ARTIST:
+        emit songsByArtistLoaded(arg);
+        break;
     case COLLECTION:
         emit songsCollectionLoaded(arg);
+        break;
+    case ALBUM:
+        emit songsAlbumLoaded(arg);
         break;
     default:
         emit loadingSongsFailed("EmitError");
