@@ -30,6 +30,14 @@ private:
     QNetworkAccessManager* manager;
 
 signals:
+
+    void songsByQueryLoaded(std::shared_ptr<QVector<Song::SongItem>> result);
+    void errorLoadedSongsByQueryFailed(QString msg);
+
+private:
+
+    void fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator, int page);
+
 };
 
 }

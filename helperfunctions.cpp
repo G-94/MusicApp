@@ -30,3 +30,11 @@ QJsonObject Helper::parseJsonStr(const QString &jsonText)
 
     return doc.object();
 }
+
+QString Helper::checkSourceUrl(QString url)
+{
+    if (not url.startsWith(HTTP_Literals::SOURCE_URL_ADDITIONAL)) {
+        url.prepend(HTTP_Literals::SOURCE_URL_ADDITIONAL);
+    }
+    return url;
+}

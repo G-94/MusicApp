@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.19)
 project(MusicApp LANGUAGES CXX)
 
-# 1. Добавляем Network в список компонентов
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network Test)
 
 qt_standard_project_setup()
 
+# --- Основное приложение ---
 qt_add_executable(MusicApp
     WIN32 MACOSX_BUNDLE
     main.cpp
@@ -18,7 +18,6 @@ qt_add_executable(MusicApp
     appexceptions.h appexceptions.cpp
 )
 
-# 2. Линкуем с Qt6::Network
 target_link_libraries(MusicApp
     PRIVATE
         Qt6::Core
@@ -26,6 +25,29 @@ target_link_libraries(MusicApp
         Qt6::Network
 )
 
+# --- Тесты (отдельная цель) ---
+enable_testing()
+
+qt_add_executable(MusicAppTests
+    musicapitests.h musicapitests.cpp
+    # Исходники, которые тестируем, — компилируются ещё раз в тестовую цель
+    musicapi.h musicapi.cpp
+    songitem.h songitem.cpp
+    helperfunctions.h helperfunctions.cpp
+    appexceptions.h appexceptions.cpp
+    config.h
+)
+
+target_link_libraries(MusicAppTests
+    PRIVATE
+        Qt6::Core
+        Qt6::Network
+        Qt6::Test
+)
+
+add_test(NAME MusicAppTests COMMAND MusicAppTests)
+
+# --- Установка (только приложение) ---
 install(TARGETS MusicApp
     BUNDLE  DESTINATION .
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
