@@ -8,7 +8,7 @@ Api::MusicApi::MusicApi(QObject *parent)
 // u"..."_sv
 using namespace Qt::StringLiterals;
 
-void Api::MusicApi::getSongsByQuery(const QString &query)
+void Api::MusicApi::getSongsByQuery(const QString &query, bool onlyOnePage)
 {
     QUrl url(HTTP_Literals::QUERY_BASE + HTTP_Literals::PAGE_BASE + "---");
     url.setQuery(QUrlQuery{{"q", query}});
@@ -20,18 +20,18 @@ void Api::MusicApi::getSongsByQuery(const QString &query)
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
 
-    fetchPage(url, accumulator, 0);
+    fetchPage(url, accumulator, 0, onlyOnePage);
 }
 
 // get songs from pages
-void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator, int page)
+void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator, int page, bool onlyOne)
 {
     url = QUrl(url.toString().replace("---", QString::number(page)));
 
     QNetworkRequest request(url);
     QNetworkReply* reply = manager->get(request);
 
-    QObject::connect(reply, &QNetworkReply::finished, [this, reply, url, accumulator, page]() {
+    QObject::connect(reply, &QNetworkReply::finished, [this, reply, url, accumulator, page, onlyOne]() {
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
@@ -85,7 +85,7 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
             ));
         }
 
-        if (page + HTTP_Literals::PAGE_STEP > 480) {
+        if (page + HTTP_Literals::PAGE_STEP > 480 or onlyOne) {
             emit songsByQueryLoaded(accumulator);
             return;
         }

@@ -23,7 +23,7 @@ class MusicApi : public QObject
 public:
     explicit MusicApi(QObject *parent = nullptr);
 
-    void getSongsByQuery(const QString& query);
+    void getSongsByQuery(const QString& query, bool onlyOnePage = false);
 
 private:
 
@@ -36,7 +36,7 @@ signals:
 
 private:
 
-    void fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator, int page);
+    void fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator, int page, bool onlyOne = false);
 
 };
 
