@@ -37,6 +37,44 @@ void Api::MusicApi::getSongsByGenre(int genre, bool onlyOnePage)
     fetchPage(url, accumulator, 0, GENRE, onlyOnePage);
 }
 
+// parse blocks of song data html, change accumulator
+void Api::MusicApi::parseSongsFromPage(const QList<QStringView> &songs_blocks,
+        std::shared_ptr<QVector<Song::SongItem>> accumulator)
+{
+    for (const auto& block : std::as_const(songs_blocks)) {
+        // get song duration
+        QStringView dur_start = block.mid(
+            block.indexOf(u"\"track__fulltime\">"_sv) +
+            qsizetype(qstrlen("\"track__fulltime\">")));
+
+        QString song_duration = dur_start.left(
+                                             dur_start.indexOf(u"</div>"_sv)
+                                             ).toString();
+
+        //get song data text
+        QStringView song_data_start = block.mid(
+            block.indexOf(u"data-musmeta=\'"_sv) +
+            qsizetype(qstrlen("data-musmeta='"))
+            );
+
+        QStringView song_data_text = song_data_start.left(
+            song_data_start.indexOf(u"\'>"_sv)
+            );
+
+        QJsonObject data = Helper::parseJsonStr(QString(song_data_text));
+
+        // add song to accumulator
+        accumulator->append(Song::SongItem(
+            data.value("artist").toString(),
+            data.value("title").toString(),
+            data.value("url").toString(),
+            data.value("img").toString(),
+            data.value("id").toString(),
+            song_duration
+        ));
+    }
+}
+
 // get songs from pages
 void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator,
     int page, EMIT_TYPE type, bool onlyOne)
@@ -67,39 +105,8 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
             return;
         }
 
-        // parse blocks of song data html
-        for (const auto& block : std::as_const(songs_blocks)) {
-            // get song duration
-            QStringView dur_start = block.mid(
-                block.indexOf(u"\"track__fulltime\">"_sv) +
-                qsizetype(qstrlen("\"track__fulltime\">")));
-
-            QString song_duration = dur_start.left(
-                dur_start.indexOf(u"</div>"_sv)
-            ).toString();
-
-            //get song data text
-            QStringView song_data_start = block.mid(
-                block.indexOf(u"data-musmeta=\'"_sv) +
-                qsizetype(qstrlen("data-musmeta='"))
-            );
-
-            QStringView song_data_text = song_data_start.left(
-                song_data_start.indexOf(u"\'>"_sv)
-            );
-
-            QJsonObject data = Helper::parseJsonStr(QString(song_data_text));
-
-            // add song to accumulator
-            accumulator->append(Song::SongItem(
-                data.value("artist").toString(),
-                data.value("title").toString(),
-                data.value("url").toString(),
-                data.value("img").toString(),
-                data.value("id").toString(),
-                song_duration
-            ));
-        }
+        // parse blocks of song data html, change accumulator
+        parseSongsFromPage(songs_blocks, accumulator);
 
         if (page + HTTP_Literals::PAGE_STEP > 480 or onlyOne) {
             chooseSignalSongList(type, accumulator);
@@ -119,6 +126,7 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
     });
 }
 
+//choose signal for songs query
 void Api::MusicApi::chooseSignalSongList(EMIT_TYPE type, std::shared_ptr<QVector<Song::SongItem>> arg)
 {
     switch (type) {

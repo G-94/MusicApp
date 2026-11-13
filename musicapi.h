@@ -29,7 +29,7 @@
 
 namespace Api {
 
-using songs_vector_ptr = std::shared_ptr<QVector<Song::SongItem>>;
+using SongsVectorPtr = std::shared_ptr<QVector<Song::SongItem>>;
 
 enum EMIT_TYPE {
     QUERY,
@@ -58,11 +58,15 @@ signals:
 
 private:
 
+    // parse blocks of song data html, change accumulator
+    void parseSongsFromPage(const QList<QStringView>& songs_blocks, SongsVectorPtr accumulator);
+
     // get songs from pages/page
-    void fetchPage(QUrl url, songs_vector_ptr accumulator,
+    void fetchPage(QUrl url, SongsVectorPtr accumulator,
         int page, EMIT_TYPE type, bool onlyOne = false);
 
-    void chooseSignalSongList(EMIT_TYPE type, songs_vector_ptr arg);
+    //choose signal for songs query
+    void chooseSignalSongList(EMIT_TYPE type, SongsVectorPtr arg);
 
 };
 

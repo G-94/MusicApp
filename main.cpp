@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     //     }
     // });
 
-    m.getSongsByGenre(51, true);
+    m.getSongsByGenre(51);
 
     QObject::connect(&m, &Api::MusicApi::songsByGenreLoaded, [] (std::shared_ptr<QVector<Song::SongItem>> res) {
         for (auto el : *res) {
