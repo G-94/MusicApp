@@ -1,3 +1,15 @@
+/*
+
+-------------------------------------------------------------------------
+
+    MusicApi to connect resource with songs,
+    Parse html pages,
+    Use songs from the resource
+
+-------------------------------------------------------------------------
+
+*/
+
 #ifndef MUSICAPI_H
 #define MUSICAPI_H
 
@@ -17,6 +29,13 @@
 
 namespace Api {
 
+using songs_vector_ptr = std::shared_ptr<QVector<Song::SongItem>>;
+
+enum EMIT_TYPE {
+    QUERY,
+    GENRE
+};
+
 class MusicApi : public QObject
 {
     Q_OBJECT
@@ -24,6 +43,7 @@ public:
     explicit MusicApi(QObject *parent = nullptr);
 
     void getSongsByQuery(const QString& query, bool onlyOnePage = false);
+    void getSongsByGenre(int genre, bool onlyOnePage = false);
 
 private:
 
@@ -32,11 +52,17 @@ private:
 signals:
 
     void songsByQueryLoaded(std::shared_ptr<QVector<Song::SongItem>> result);
-    void errorLoadedSongsByQueryFailed(QString msg);
+    void songsByGenreLoaded(std::shared_ptr<QVector<Song::SongItem>> result);
+
+    void loadingSongsFailed(QString msg);
 
 private:
 
-    void fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator, int page, bool onlyOne = false);
+    // get songs from pages/page
+    void fetchPage(QUrl url, songs_vector_ptr accumulator,
+        int page, EMIT_TYPE type, bool onlyOne = false);
+
+    void chooseSignalSongList(EMIT_TYPE type, songs_vector_ptr arg);
 
 };
 

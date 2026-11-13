@@ -1,3 +1,19 @@
+/*
+
+-------------------------------------------------------------------------
+
+    SongItem class store songs main data:
+
+    author_, title_, text_duration_ is used like meta-data
+    source_url_ provides access to download and play songs
+    id_ is used to find track
+    duration_ what integer type used for play tracks
+    source_img_ is unused but maybe will be need in future
+
+-------------------------------------------------------------------------
+
+*/
+
 #ifndef SONGITEM_H
 #define SONGITEM_H
 

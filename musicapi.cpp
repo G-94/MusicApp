@@ -14,28 +14,44 @@ void Api::MusicApi::getSongsByQuery(const QString &query, bool onlyOnePage)
     url.setQuery(QUrlQuery{{"q", query}});
 
     if (not url.isValid()) {
-        emit errorLoadedSongsByQueryFailed("InvalidUrl");
+        emit loadingSongsFailed("InvalidUrl");
         return;
     }
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
 
-    fetchPage(url, accumulator, 0, onlyOnePage);
+    fetchPage(url, accumulator, 0, QUERY, onlyOnePage);
+}
+
+void Api::MusicApi::getSongsByGenre(int genre, bool onlyOnePage)
+{
+    QUrl url(HTTP_Literals::GENRE_BASE + QString::number(genre) + HTTP_Literals::PAGE_BASE + "---");
+
+    if (not url.isValid()) {
+        emit loadingSongsFailed("InvalidUrl");
+        return;
+    }
+
+    std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
+
+    fetchPage(url, accumulator, 0, GENRE, onlyOnePage);
 }
 
 // get songs from pages
-void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator, int page, bool onlyOne)
+void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator,
+    int page, EMIT_TYPE type, bool onlyOne)
 {
     url = QUrl(url.toString().replace("---", QString::number(page)));
 
     QNetworkRequest request(url);
     QNetworkReply* reply = manager->get(request);
 
-    QObject::connect(reply, &QNetworkReply::finished, [this, reply, url, accumulator, page, onlyOne]() {
+    QObject::connect(reply, &QNetworkReply::finished, [this, reply, url,
+            accumulator, page, onlyOne, type]() {
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            emit errorLoadedSongsByQueryFailed("ReplyError");
+            emit loadingSongsFailed("ReplyError");
             return;
         }
 
@@ -86,7 +102,7 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
         }
 
         if (page + HTTP_Literals::PAGE_STEP > 480 or onlyOne) {
-            emit songsByQueryLoaded(accumulator);
+            chooseSignalSongList(type, accumulator);
             return;
         }
 
@@ -99,6 +115,21 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
             QString::number(page).length(), "---")
         );
 
-        fetchPage(next_url, accumulator, page + HTTP_Literals::PAGE_STEP);
+        fetchPage(next_url, accumulator, page + HTTP_Literals::PAGE_STEP, type);
     });
+}
+
+void Api::MusicApi::chooseSignalSongList(EMIT_TYPE type, std::shared_ptr<QVector<Song::SongItem>> arg)
+{
+    switch (type) {
+    case QUERY:
+        emit songsByQueryLoaded(arg);
+        break;
+    case GENRE:
+        emit songsByGenreLoaded(arg);
+        break;
+    default:
+        emit loadingSongsFailed("EmitError");
+        break;
+    }
 }

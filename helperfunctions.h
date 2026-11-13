@@ -1,3 +1,14 @@
+/*
+
+-------------------------------------------------------------------------
+
+    Helper Functions is
+        used to solve some simple problems in different classes
+
+-------------------------------------------------------------------------
+
+*/
+
 #ifndef HELPERFUNCTIONS_H
 #define HELPERFUNCTIONS_H
 
