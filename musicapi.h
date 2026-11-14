@@ -25,13 +25,16 @@
 
 #include "config.h"
 #include "songitem.h"
+#include "artistitem.h"
 #include "appexceptions.h"
 
 namespace Api {
 
 using SongsVectorPtr = std::shared_ptr<QVector<Song::SongItem>>;
+using ArtistsVectorPtr = std::shared_ptr<QVector<Artists::ArtistItem>>;
 
-enum EMIT_SONGS_TYPE {
+enum EMIT_TYPE {
+    QUERY_AND_ARTISTS,
     QUERY,
     GENRE,
     ARTIST,
@@ -45,7 +48,7 @@ class MusicApi : public QObject
 public:
     explicit MusicApi(QObject *parent = nullptr);
 
-    void getSongsByQuery(const QString& query, bool onlyOnePage = false);
+    void getSongsAndArtistsByQuery(const QString& query, bool onlyOnePage = false);
     void getSongsByGenre(QString genre, bool onlyOnePage = false);
     void getSongsByArtist(QString artist_id, bool onlyOnePage = false);
     void getSongsCollection(QString collection_id);
@@ -63,19 +66,25 @@ signals:
     void songsCollectionLoaded(std::shared_ptr<QVector<Song::SongItem>> result);
     void songsAlbumLoaded(std::shared_ptr<QVector<Song::SongItem>> result);
 
+    void artistsListLoaded(std::shared_ptr<QVector<Artists::ArtistItem>> result);
+
     void loadingSongsFailed(QString msg);
+    void loadingArtistsFailed(QString msg);
 
 private:
 
     // parse blocks of song data html; change accumulator
     void parseSongsFromPage(const QList<QStringView>& songs_blocks, SongsVectorPtr accumulator);
 
+    //parse page, finds artists; change result
+    void parseArtistsFromPage(const QStringView page, ArtistsVectorPtr result);
+
     // get songs from pages/page
     void fetchPage(QUrl url, SongsVectorPtr accumulator,
-        int page, EMIT_SONGS_TYPE type, bool onlyOne = false);
+        int page, EMIT_TYPE type, bool onlyOne = false);
 
     //choose signal for songs query
-    void chooseSignalSongList(EMIT_SONGS_TYPE type, SongsVectorPtr arg);
+    void chooseSignalSongList(EMIT_TYPE type, SongsVectorPtr arg);
 
 private:
 

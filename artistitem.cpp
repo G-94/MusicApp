@@ -1,16 +1,15 @@
 #include "artistitem.h"
 
-
-ArtistItem::ArtistItem(QString name, QString id) :
+Artists::ArtistItem::ArtistItem(QString name, QString id) :
     name_(std::move(name)), id_(std::move(id))
 {}
 
-QString ArtistItem::getName() const noexcept
+QString Artists::ArtistItem::getName() const noexcept
 {
     return name_;
 }
 
-QString ArtistItem::getId() const noexcept
+QString Artists::ArtistItem::getId() const noexcept
 {
     return id_;
 }

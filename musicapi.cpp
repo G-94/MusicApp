@@ -8,7 +8,7 @@ Api::MusicApi::MusicApi(QObject *parent)
 // u"..."_sv
 using namespace Qt::StringLiterals;
 
-void Api::MusicApi::getSongsByQuery(const QString &query, bool onlyOnePage)
+void Api::MusicApi::getSongsAndArtistsByQuery(const QString &query, bool onlyOnePage)
 {
     QUrl url(HTTP_Literals::QUERY_BASE + HTTP_Literals::PAGE_BASE + "---");
     url.setQuery(QUrlQuery{{"q", query}});
@@ -17,7 +17,7 @@ void Api::MusicApi::getSongsByQuery(const QString &query, bool onlyOnePage)
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
 
-    fetchPage(url, accumulator, 0, QUERY, onlyOnePage);
+    fetchPage(url, accumulator, 0, QUERY_AND_ARTISTS, onlyOnePage);
 }
 
 void Api::MusicApi::getSongsByGenre(QString genre, bool onlyOnePage)
@@ -60,6 +60,54 @@ void Api::MusicApi::getSongsAlbum(QString album_id)
     fetchPage(url, accumulator, 0, ALBUM, true);
 }
 
+// parse page, finds artists; change result
+void Api::MusicApi::parseArtistsFromPage(const QStringView page,
+    std::shared_ptr<QVector<Artists::ArtistItem>> result)
+{
+    // find block start
+    qsizetype block_start_idx = page.indexOf(u"<ul class=\"singers-list album-list\">"_sv);
+
+    if (block_start_idx == -1) {
+        emit artistsListLoaded(result);
+    }
+
+    QStringView block_start = page.mid(block_start_idx);
+
+    // take block text
+    QStringView artists_block_text = block_start.left(
+        block_start.indexOf(u"</ul>"_sv)
+    );
+
+    QList<QStringView> artists_blocks = artists_block_text.split(u"album-item"_sv).sliced(1);
+
+    for (const QStringView& block : std::as_const(artists_blocks)) {
+        QStringView id_start_text = block.mid(
+            block.indexOf(u"<a href=\"/artist/"_sv) +
+            qsizetype(u"<a href=\"/artist/"_sv.length()
+        ));
+
+        QString id = QString(
+            id_start_text.left(id_start_text.indexOf(u"\""_sv))
+        );
+
+        QStringView name_start_text = block.mid(
+            block.indexOf(u"class=\"album-title\">"_sv) +
+            qsizetype(u"class=\"album-title\">"_sv.length()
+        ));
+
+        QString name = QString(
+            name_start_text.left(name_start_text.indexOf(u"</span>"_sv))
+        );
+
+        result->append(Artists::ArtistItem{
+            name,
+            id
+        });
+    }
+
+    emit artistsListLoaded(result);
+}
+
 // parse blocks of song data html, change accumulator
 void Api::MusicApi::parseSongsFromPage(const QList<QStringView> &songs_blocks,
         std::shared_ptr<QVector<Song::SongItem>> accumulator)
@@ -87,20 +135,20 @@ void Api::MusicApi::parseSongsFromPage(const QList<QStringView> &songs_blocks,
         QJsonObject data = Helper::parseJsonStr(QString(song_data_text));
 
         // add song to accumulator
-        accumulator->append(Song::SongItem(
+        accumulator->append(Song::SongItem{
             data.value("artist").toString(),
             data.value("title").toString(),
             data.value("url").toString(),
             data.value("img").toString(),
             data.value("id").toString(),
             song_duration
-        ));
+        });
     }
 }
 
 // get songs from pages
 void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>> accumulator,
-    int page, EMIT_SONGS_TYPE type, bool onlyOne)
+    int page, EMIT_TYPE type, bool onlyOne)
 {
     // change empty part of string to insert page counter
     if (type != COLLECTION and type != ALBUM) {
@@ -111,7 +159,7 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
     QNetworkReply* reply = manager_->get(request);
 
     QObject::connect(reply, &QNetworkReply::finished, [this, reply, url,
-            accumulator, page, onlyOne, type]() {
+            accumulator, page, onlyOne, &type]() {
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
@@ -129,6 +177,14 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
         if (songs_blocks.isEmpty()) {
             emit songsByQueryLoaded(accumulator);
             return;
+        }
+
+        if (type == QUERY_AND_ARTISTS) {
+            // create artists list, parse page and set type to QUERY
+            std::shared_ptr<QVector<Artists::ArtistItem>> artists =
+                std::make_shared<QVector<Artists::ArtistItem>>();
+            parseArtistsFromPage(QStringView(page_text), artists);
+            type = QUERY;
         }
 
         // parse blocks of song data html, change accumulator
@@ -153,7 +209,7 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
 }
 
 //choose signal for songs query
-void Api::MusicApi::chooseSignalSongList(EMIT_SONGS_TYPE type, std::shared_ptr<QVector<Song::SongItem>> arg)
+void Api::MusicApi::chooseSignalSongList(EMIT_TYPE type, std::shared_ptr<QVector<Song::SongItem>> arg)
 {
     switch (type) {
     case QUERY:

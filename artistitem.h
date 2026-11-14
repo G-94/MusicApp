@@ -18,9 +18,11 @@
 #include <QObject>
 #include <QString>
 
-class ArtistItem : public QObject
+namespace Artists {
+
+class ArtistItem
 {
-    Q_OBJECT
+
 public:
     explicit ArtistItem(QString name, QString id);
 
@@ -34,5 +36,7 @@ private:
 
 signals:
 };
+
+}
 
 #endif // ARTISTITEM_H
