@@ -13,7 +13,10 @@ void Api::MusicApi::getSongsAndArtistsByQuery(const QString &query, bool onlyOne
     QUrl url(HTTP_Literals::QUERY_BASE + HTTP_Literals::PAGE_BASE + "---");
     url.setQuery(QUrlQuery{{"q", query}});
 
-    if (not checkUrl(url)) return;
+    if (not checkUrl(url)) {
+        emit loadingArtistsFailed(Codes_Literals::INVALID_URL);
+        return;
+    }
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
 
@@ -163,7 +166,8 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            emit loadingSongsFailed("ReplyError");
+            emit loadingSongsFailed(Codes_Literals::REPLY_ERROR);
+            emit loadingArtistsFailed(Codes_Literals::REPLY_ERROR)
             return;
         }
 
@@ -228,7 +232,7 @@ void Api::MusicApi::chooseSignalSongList(EMIT_TYPE type, std::shared_ptr<QVector
         emit songsAlbumLoaded(arg);
         break;
     default:
-        emit loadingSongsFailed("EmitError");
+        emit loadingSongsFailed(Codes_Literals::EMIT_ERROR);
         break;
     }
 }
@@ -236,7 +240,7 @@ void Api::MusicApi::chooseSignalSongList(EMIT_TYPE type, std::shared_ptr<QVector
 bool Api::MusicApi::checkUrl(const QUrl &url)
 {
     if (not url.isValid()) {
-        emit loadingSongsFailed("InvalidUrl");
+        emit loadingSongsFailed(Codes_Literals::INVALID_URL);
         return false;
     }
     return true;

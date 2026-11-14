@@ -25,7 +25,7 @@ namespace Radio {
 class RadioItem
 {
 public:
-    RadioItem(QString name, QString id, QString source_url, QString source_img_url);
+    explicit RadioItem(QString name, QString id, QString source_url, QString source_img_url);
 
     QString getName() const noexcept;
     QString getId() const noexcept;

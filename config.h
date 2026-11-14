@@ -20,4 +20,12 @@ const QString RADIO_BASE = "https://ru.hitmox.net/radio";
 
 }
 
+namespace Codes_Literals {
+
+const QString INVALID_URL = "InvalidUrl";
+const QString EMIT_ERROR = "EmitError";
+const QString REPLY_ERROR = "ReplyError";
+
+}
+
 #endif // CONFIG_H
