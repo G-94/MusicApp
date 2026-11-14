@@ -26,12 +26,14 @@
 #include "config.h"
 #include "songitem.h"
 #include "artistitem.h"
+#include "radioitem.h"
 #include "appexceptions.h"
 
 namespace Api {
 
 using SongsVectorPtr = std::shared_ptr<QVector<Song::SongItem>>;
 using ArtistsVectorPtr = std::shared_ptr<QVector<Artists::ArtistItem>>;
+using RadiosVectorPtr = std::shared_ptr<QVector<Radio::RadioItem>>;
 
 enum EMIT_TYPE {
     QUERY_AND_ARTISTS,
@@ -54,6 +56,8 @@ public:
     void getSongsCollection(QString collection_id);
     void getSongsAlbum(QString album_id);
 
+    void getRadios();
+
 private:
 
     QNetworkAccessManager* manager_;
@@ -67,21 +71,30 @@ signals:
     void songsAlbumLoaded(std::shared_ptr<QVector<Song::SongItem>> result);
 
     void artistsListLoaded(std::shared_ptr<QVector<Artists::ArtistItem>> result);
+    void radiosListLoaded(std::shared_ptr<QVector<Radio::RadioItem>> result);
 
     void loadingSongsFailed(QString msg);
     void loadingArtistsFailed(QString msg);
+    void loadingRadiosFailed(QString msg);
 
 private:
 
     // parse blocks of song data html; change accumulator
     void parseSongsFromPage(const QList<QStringView>& songs_blocks, SongsVectorPtr accumulator);
 
-    //parse page, finds artists; change result
+    // parse page, finds artists; change result
     void parseArtistsFromPage(const QStringView page, ArtistsVectorPtr result);
+
+    // parse page, finds radios; change result
+    void parseRadiosFromPage(const QStringView page, RadiosVectorPtr accumulator);
 
     // get songs from pages/page
     void fetchPage(QUrl url, SongsVectorPtr accumulator,
         int page, EMIT_TYPE type, bool onlyOne = false);
+
+    // get radios from pages/page
+    void fetchRadiosPages(QUrl url, RadiosVectorPtr accumulator,
+        int page, bool onlyOne = false);
 
     //choose signal for songs query
     void chooseSignalSongList(EMIT_TYPE type, SongsVectorPtr arg);

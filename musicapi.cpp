@@ -63,6 +63,70 @@ void Api::MusicApi::getSongsAlbum(QString album_id)
     fetchPage(url, accumulator, 0, ALBUM, true);
 }
 
+void Api::MusicApi::getRadios()
+{
+    QUrl url(HTTP_Literals::RADIO_BASE + HTTP_Literals::PAGE_BASE + "---");
+    if (not url.isValid()) {
+        emit loadingRadiosFailed(Codes_Literals::INVALID_URL);
+        return;
+    }
+
+    std::shared_ptr<QVector<Radio::RadioItem>> accumulator = std::make_shared<QVector<Radio::RadioItem>>();
+
+    fetchRadiosPages(url, accumulator, 0);
+}
+
+// parse page, finds radios; change result
+void Api::MusicApi::parseRadiosFromPage(const QStringView page, RadiosVectorPtr accumulator)
+{
+    qsizetype start_bloc_idx = page.indexOf(u"album-list muslist"_sv);
+    if (start_bloc_idx == -1) {
+        emit loadingRadiosFailed(Codes_Literals::REPLY_ERROR);
+        return;
+    }
+
+    QStringView start_block = page.mid(start_bloc_idx);
+    QStringView radios_block = start_block.left(start_block.indexOf(u"</ul>"_sv));
+
+    QList<QStringView> blocks = radios_block.split(u"album-item media-elem mustoggler"_sv).sliced(1);
+
+    for (const QStringView& block : std::as_const(blocks)) {
+        QStringView data_start = block.mid(block.indexOf(u"data-musmeta=\'"_sv)
+            + qsizetype(u"data-musmeta=\'"_sv.length())
+        );
+
+        QStringView data_text = data_start.left(data_start.indexOf(u"\'>"_sv));
+
+        QJsonObject obj;
+
+        try {
+            obj = Helper::parseJsonStr(QString(data_text));
+        } catch (const QException& e) {
+            emit loadingRadiosFailed(e.what());
+            return;
+        }
+
+        // add radios to accumulator
+        accumulator->append(Radio::RadioItem{
+            obj.value("title").toString(),
+            obj.value("id").toString(),
+            obj.value("url").toString(),
+            obj.value("img").toString()
+        });
+    }
+}
+
+// get radios from pages/page
+void Api::MusicApi::fetchRadiosPages(QUrl url, RadiosVectorPtr accumulator, int page, bool onlyOne)
+{
+    QNetworkRequest request(url);
+    QNetworkReply* reply = manager_->get(request);
+
+    QObject::connect(reply, &QNetworkReply::finished, [reply, accumulator, onlyOne]() {
+        reply->deleteLater();
+    });
+}
+
 // parse page, finds artists; change result
 void Api::MusicApi::parseArtistsFromPage(const QStringView page,
     std::shared_ptr<QVector<Artists::ArtistItem>> result)
@@ -135,7 +199,14 @@ void Api::MusicApi::parseSongsFromPage(const QList<QStringView> &songs_blocks,
             song_data_start.indexOf(u"\'>"_sv)
         );
 
-        QJsonObject data = Helper::parseJsonStr(QString(song_data_text));
+        QJsonObject data;
+
+        try {
+            data = Helper::parseJsonStr(QString(song_data_text));
+        } catch (const QException& e) {
+            emit loadingSongsFailed(e.what());
+            return;
+        }
 
         // add song to accumulator
         accumulator->append(Song::SongItem{
@@ -167,7 +238,7 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
 
         if (reply->error() != QNetworkReply::NoError) {
             emit loadingSongsFailed(Codes_Literals::REPLY_ERROR);
-            emit loadingArtistsFailed(Codes_Literals::REPLY_ERROR)
+            emit loadingArtistsFailed(Codes_Literals::REPLY_ERROR);
             return;
         }
 
