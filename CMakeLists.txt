@@ -17,6 +17,7 @@ qt_add_executable(MusicApp
     helperfunctions.h helperfunctions.cpp
     appexceptions.h appexceptions.cpp
     artistitem.h artistitem.cpp
+    radioitem.h radioitem.cpp
 )
 
 target_link_libraries(MusicApp

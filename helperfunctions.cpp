@@ -38,3 +38,14 @@ QString Helper::checkSourceUrl(QString url)
     }
     return url;
 }
+QString Helper::getOnlyNumericFromStr(const QString &str)
+{
+    QString result;
+    for (const QChar c : str) {
+        if (c.isNumber()) {
+            result += c;
+        }
+    }
+
+    return result;
+}
