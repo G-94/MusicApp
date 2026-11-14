@@ -21,11 +21,11 @@ QJsonObject Helper::parseJsonStr(const QString &jsonText)
     QJsonDocument doc = QJsonDocument::fromJson(cleaned.toUtf8(), &jsonError);
 
     if (jsonError.error != QJsonParseError::NoError) {
-        //TODO THROW
+        throw AppExceptions::ParseDataException("JsonError");
     }
 
     if (not doc.isObject()) {
-        //TODO THROW
+        throw AppExceptions::ParseDataException("JsonNotAnObject");
     }
 
     return doc.object();

@@ -7,16 +7,16 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     Api::MusicApi m;
-    m.getSongsAndArtistsByQuery("Kanye", true);
+    m.getSongsAndArtistsByQuery("Kanye");
 
     QObject::connect(&m, &Api::MusicApi::songsByQueryLoaded, [] (std::shared_ptr<QVector<Song::SongItem>> res) {
-        for (auto el : *res) {
+        for (auto& el : *res) {
             qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
         }
     });
 
     QObject::connect(&m, &Api::MusicApi::artistsListLoaded, [] (std::shared_ptr<QVector<Artists::ArtistItem>> res) {
-        for (auto el : *res) {
+        for (auto& el : *res) {
             qDebug() << el.getName() << el.getId() << "\n";
         }
     });

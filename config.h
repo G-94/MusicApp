@@ -16,6 +16,8 @@ const QString ARTISTS_BASE = "https://ru.hitmox.net/artist/";
 const QString PAGE_BASE = "/start/";
 const int PAGE_STEP = 48;
 
+const QString RADIO_BASE = "https://ru.hitmox.net/radio";
+
 }
 
 #endif // CONFIG_H

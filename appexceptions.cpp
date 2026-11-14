@@ -41,3 +41,8 @@ AppExceptions::InvalidUrlException *AppExceptions::InvalidUrlException::clone() 
 {
     return new InvalidUrlException(*this);
 }
+
+AppExceptions::ParseDataError::ParseDataError(QString msg)
+{
+
+}
