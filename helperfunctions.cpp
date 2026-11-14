@@ -38,6 +38,7 @@ QString Helper::checkSourceUrl(QString url)
     }
     return url;
 }
+
 QString Helper::getOnlyNumericFromStr(const QString &str)
 {
     QString result;

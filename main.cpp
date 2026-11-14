@@ -7,19 +7,19 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     Api::MusicApi m;
-    m.getSongsAndArtistsByQuery("Kanye");
+    // m.getSongsAndArtistsByQuery("Kanye");
 
-    QObject::connect(&m, &Api::MusicApi::songsByQueryLoaded, [] (std::shared_ptr<QVector<Song::SongItem>> res) {
-        for (auto& el : *res) {
-            qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
-        }
-    });
+    // QObject::connect(&m, &Api::MusicApi::songsByQueryLoaded, [] (std::shared_ptr<QVector<Song::SongItem>> res) {
+    //     for (auto& el : *res) {
+    //         qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
+    //     }
+    // });
 
-    QObject::connect(&m, &Api::MusicApi::artistsListLoaded, [] (std::shared_ptr<QVector<Artists::ArtistItem>> res) {
-        for (auto& el : *res) {
-            qDebug() << el.getName() << el.getId() << "\n";
-        }
-    });
+    // QObject::connect(&m, &Api::MusicApi::artistsListLoaded, [] (std::shared_ptr<QVector<Artists::ArtistItem>> res) {
+    //     for (auto& el : *res) {
+    //         qDebug() << el.getName() << el.getId() << "\n";
+    //     }
+    // });
 
 
     // m.getSongsByGenre("51");
@@ -53,6 +53,15 @@ int main(int argc, char *argv[])
     //         qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
     //     }
     // });
+
+    m.getRadios();
+
+    QObject::connect(&m, &Api::MusicApi::radiosListLoaded, [] (std::shared_ptr<QVector<Radio::RadioItem>> res) {
+        for (auto& el : *res) {
+            qDebug() << el.getName() << el.getId() << el.getSourceImgUrl() << el.getSourceUrl() << "\n";
+        }
+    });
+
 
     return QApplication::exec();
 }

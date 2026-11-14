@@ -38,6 +38,7 @@ qt_add_executable(MusicAppTests
     helperfunctions.h helperfunctions.cpp
     appexceptions.h appexceptions.cpp
     artistitem.h artistitem.cpp
+    radioitem.h radioitem.cpp
     config.h
 )
 

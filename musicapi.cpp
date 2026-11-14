@@ -102,7 +102,7 @@ void Api::MusicApi::parseRadiosFromPage(const QStringView page, RadiosVectorPtr 
         try {
             obj = Helper::parseJsonStr(QString(data_text));
         } catch (const QException& e) {
-            emit loadingRadiosFailed(e.what());
+            e.raise();
             return;
         }
 
@@ -122,8 +122,32 @@ void Api::MusicApi::fetchRadiosPages(QUrl url, RadiosVectorPtr accumulator, int 
     QNetworkRequest request(url);
     QNetworkReply* reply = manager_->get(request);
 
-    QObject::connect(reply, &QNetworkReply::finished, [reply, accumulator, onlyOne]() {
+    QObject::connect(reply, &QNetworkReply::finished, [this, reply, url, accumulator, page, onlyOne]() mutable {
         reply->deleteLater();
+
+        url = QUrl(url.toString().replace("---", QString::number(page)));
+
+        if(reply->error() != QNetworkReply::NoError) {
+            emit loadingRadiosFailed(Codes_Literals::REPLY_ERROR);
+            return;
+        }
+
+        QString page_text = reply->readAll();
+
+        try {
+            parseRadiosFromPage(page_text, accumulator);
+        } catch (const QException& e) {
+            emit loadingRadiosFailed(e.what());
+        }
+
+        if (onlyOne or page > 1000) {
+            emit radiosListLoaded(accumulator);
+            return;
+        }
+
+        QUrl next_url = replacePageToEmpty(url, page);
+
+        fetchRadiosPages(next_url, accumulator, page + 48);
     });
 }
 
@@ -204,7 +228,7 @@ void Api::MusicApi::parseSongsFromPage(const QList<QStringView> &songs_blocks,
         try {
             data = Helper::parseJsonStr(QString(song_data_text));
         } catch (const QException& e) {
-            emit loadingSongsFailed(e.what());
+            e.raise();
             return;
         }
 
@@ -233,7 +257,7 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
     QNetworkReply* reply = manager_->get(request);
 
     QObject::connect(reply, &QNetworkReply::finished, [this, reply, url,
-            accumulator, page, onlyOne, &type]() {
+            accumulator, page, onlyOne, type]() mutable {
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
@@ -254,6 +278,10 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
             return;
         }
 
+        //
+        // ADD ALBUMS
+        //  HERE
+
         if (type == QUERY_AND_ARTISTS) {
             // create artists list, parse page and set type to QUERY
             std::shared_ptr<QVector<Artists::ArtistItem>> artists =
@@ -263,21 +291,19 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
         }
 
         // parse blocks of song data html, change accumulator
-        parseSongsFromPage(songs_blocks, accumulator);
+        try {
+            parseSongsFromPage(songs_blocks, accumulator);
+        } catch (const QException& e) {
+            emit loadingSongsFailed(e.what());
+            return;
+        }
 
         if (onlyOne or page + HTTP_Literals::PAGE_STEP > 480) {
             chooseSignalSongList(type, accumulator);
             return;
         }
 
-        QString temp_url = url.toString();
-
-        // replace page counter to ---
-        QUrl next_url = QUrl(temp_url.replace(
-            temp_url.indexOf(HTTP_Literals::PAGE_BASE) +
-            qsizetype(HTTP_Literals::PAGE_BASE.length()),
-            QString::number(page).length(), "---")
-        );
+        QUrl next_url = replacePageToEmpty(url, page);
 
         fetchPage(next_url, accumulator, page + HTTP_Literals::PAGE_STEP, type);
     });
@@ -315,4 +341,18 @@ bool Api::MusicApi::checkUrl(const QUrl &url)
         return false;
     }
     return true;
+}
+
+// replace page counter to ---
+QUrl Api::MusicApi::replacePageToEmpty(QUrl url, int page)
+{
+    QString temp_url = url.toString();
+
+    QUrl next_url = QUrl(temp_url.replace(
+        temp_url.indexOf(HTTP_Literals::PAGE_BASE) +
+            qsizetype(HTTP_Literals::PAGE_BASE.length()),
+        QString::number(page).length(), "---")
+    );
+
+    return next_url;
 }

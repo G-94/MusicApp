@@ -103,6 +103,9 @@ private:
 
     bool checkUrl(const QUrl& url);
 
+    // replace page counter to ---
+    QUrl replacePageToEmpty(QUrl url, int page);
+
 };
 
 }

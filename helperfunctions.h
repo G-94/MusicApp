@@ -16,6 +16,7 @@
 #include <QList>
 #include <QJsonObject>
 
+#include "appexceptions.h"
 #include "config.h"
 
 namespace Helper {
@@ -23,7 +24,10 @@ quint32 castTextDurationToInt(const QString& duration) noexcept;
 
 QString checkSourceUrl(QString url);
 
+QString getOnlyNumericFromStr(const QString& str);
+
 QJsonObject parseJsonStr(const QString& jsonText);
+
 }
 
 #endif // HELPERFUNCTIONS_H

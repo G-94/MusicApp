@@ -42,7 +42,22 @@ AppExceptions::InvalidUrlException *AppExceptions::InvalidUrlException::clone() 
     return new InvalidUrlException(*this);
 }
 
-AppExceptions::ParseDataError::ParseDataError(QString msg)
-{
+//ParseDataException
 
+AppExceptions::ParseDataException::ParseDataException(QString msg) : message_(std::move(msg.toStdString()))
+{}
+
+const char *AppExceptions::ParseDataException::what() const noexcept
+{
+    return message_.c_str();
+}
+
+void AppExceptions::ParseDataException::raise() const
+{
+    throw *this;
+}
+
+AppExceptions::ParseDataException *AppExceptions::ParseDataException::clone() const
+{
+    return new ParseDataException(*this);
 }
