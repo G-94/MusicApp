@@ -25,6 +25,7 @@ namespace Codes_Literals {
 const QString INVALID_URL = "InvalidUrl";
 const QString EMIT_ERROR = "EmitError";
 const QString REPLY_ERROR = "ReplyError";
+const QString PARSE_ERROR = "ParseError";
 
 }
 

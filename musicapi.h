@@ -27,6 +27,7 @@
 #include "songitem.h"
 #include "artistitem.h"
 #include "radioitem.h"
+#include "albumitem.h"
 #include "appexceptions.h"
 
 namespace Api {
@@ -34,9 +35,10 @@ namespace Api {
 using SongsVectorPtr = std::shared_ptr<QVector<Song::SongItem>>;
 using ArtistsVectorPtr = std::shared_ptr<QVector<Artists::ArtistItem>>;
 using RadiosVectorPtr = std::shared_ptr<QVector<Radio::RadioItem>>;
+using AlbumsVectorPtr = std::shared_ptr<QVector<Album::AlbumItem>>;
 
 enum EMIT_TYPE {
-    QUERY_AND_ARTISTS,
+    QUERY_SONGS_ARTISTS_ALBUMS,
     QUERY,
     GENRE,
     ARTIST,
@@ -50,7 +52,7 @@ class MusicApi : public QObject
 public:
     explicit MusicApi(QObject *parent = nullptr);
 
-    void getSongsAndArtistsByQuery(const QString& query, bool onlyOnePage = false);
+    void getSongsArtistsAlbumsByQuery(const QString& query, bool onlyOnePage = false);
     void getSongsByGenre(QString genre, bool onlyOnePage = false);
     void getSongsByArtist(QString artist_id, bool onlyOnePage = false);
     void getSongsCollection(QString collection_id);
@@ -71,10 +73,12 @@ signals:
     void songsAlbumLoaded(std::shared_ptr<QVector<Song::SongItem>> result);
 
     void artistsListLoaded(std::shared_ptr<QVector<Artists::ArtistItem>> result);
+    void albumsListLoaded(std::shared_ptr<QVector<Album::AlbumItem>> result);
     void radiosListLoaded(std::shared_ptr<QVector<Radio::RadioItem>> result);
 
     void loadingSongsFailed(QString msg);
     void loadingArtistsFailed(QString msg);
+    void loadingAlbumsFailed(QString msg);
     void loadingRadiosFailed(QString msg);
 
 private:
@@ -82,8 +86,11 @@ private:
     // parse blocks of song data html; change accumulator
     void parseSongsFromPage(const QList<QStringView>& songs_blocks, SongsVectorPtr accumulator);
 
-    // parse page, finds artists; change result
+    // parse page, finds artists; change result; used in fetchPage
     void parseArtistsFromPage(const QStringView page, ArtistsVectorPtr result);
+
+    // parse page, finds albums; change result; used in fetchPage
+    void parseAlbumsFromPage(const QStringView page, AlbumsVectorPtr result);
 
     // parse page, finds radios; change result
     void parseRadiosFromPage(const QStringView page, RadiosVectorPtr accumulator);

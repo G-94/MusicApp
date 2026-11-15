@@ -8,7 +8,7 @@ Api::MusicApi::MusicApi(QObject *parent)
 // u"..."_sv
 using namespace Qt::StringLiterals;
 
-void Api::MusicApi::getSongsAndArtistsByQuery(const QString &query, bool onlyOnePage)
+void Api::MusicApi::getSongsArtistsAlbumsByQuery(const QString &query, bool onlyOnePage)
 {
     QUrl url(HTTP_Literals::QUERY_BASE + HTTP_Literals::PAGE_BASE + "---");
     url.setQuery(QUrlQuery{{"q", query}});
@@ -20,7 +20,7 @@ void Api::MusicApi::getSongsAndArtistsByQuery(const QString &query, bool onlyOne
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
 
-    fetchPage(url, accumulator, 0, QUERY_AND_ARTISTS, onlyOnePage);
+    fetchPage(url, accumulator, 0, QUERY_SONGS_ARTISTS_ALBUMS, onlyOnePage);
 }
 
 void Api::MusicApi::getSongsByGenre(QString genre, bool onlyOnePage)
@@ -76,12 +76,66 @@ void Api::MusicApi::getRadios()
     fetchRadiosPages(url, accumulator, 0);
 }
 
+// parse page, finds albums; change result; used in fetchPage
+void Api::MusicApi::parseAlbumsFromPage(const QStringView page, AlbumsVectorPtr result)
+{
+    qsizetype start_block_idx = page.indexOf(u"<h2 class=\"p-info-title\">Альбомы</h2>"_sv);
+
+    if (start_block_idx == -1) {
+        emit albumsListLoaded(result);
+    }
+
+    QStringView block_start_text = page.mid(start_block_idx +
+        u"<h2 class=\"p-info-title\">Альбомы</h2>"_sv.length()
+    );
+
+    QList<QStringView> blocks = block_start_text.left(
+        block_start_text.indexOf(u"</ul>"_sv)
+    ).split(u"album-item"_sv).sliced(1);
+
+    for (const QStringView& block : std::as_const(blocks)) {
+        QStringView id_start_text = block.mid(
+            block.indexOf(u"/album/"_sv) +
+            qsizetype(u"/album/"_sv.length()
+        ));
+
+        QString id = QString(id_start_text.left(
+            id_start_text.indexOf(u"\">"_sv)
+        ));
+
+        QStringView name_start_text = block.mid(
+            block.indexOf(u"\"album-title\">"_sv) +
+            qsizetype(u"\"album-title\">"_sv.length()
+        ));
+
+        // breckets using for parse date; format: (date)
+        qsizetype breckets_open_pos = name_start_text.lastIndexOf(u"("_sv);
+
+        if(breckets_open_pos == -1) {
+            emit loadingAlbumsFailed(Codes_Literals::PARSE_ERROR);
+            return;
+        }
+
+        // 4 - year string length
+        QString year = QString(name_start_text.mid(breckets_open_pos + 1, 4));
+        QString name = QString(name_start_text.left(breckets_open_pos).trimmed());
+
+        result->append(Album::AlbumItem{
+            name,
+            year,
+            id
+        });
+    }
+
+    emit albumsListLoaded(result);
+}
+
 // parse page, finds radios; change result
 void Api::MusicApi::parseRadiosFromPage(const QStringView page, RadiosVectorPtr accumulator)
 {
     qsizetype start_bloc_idx = page.indexOf(u"album-list muslist"_sv);
     if (start_bloc_idx == -1) {
-        emit loadingRadiosFailed(Codes_Literals::REPLY_ERROR);
+        emit loadingRadiosFailed(Codes_Literals::PARSE_ERROR);
         return;
     }
 
@@ -278,15 +332,19 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
             return;
         }
 
-        //
-        // ADD ALBUMS
-        //  HERE
+        // create artists list,
+        //      create albums list,
+        // parse page and set type to QUERY
+        if (type == QUERY_SONGS_ARTISTS_ALBUMS) {
 
-        if (type == QUERY_AND_ARTISTS) {
-            // create artists list, parse page and set type to QUERY
             std::shared_ptr<QVector<Artists::ArtistItem>> artists =
                 std::make_shared<QVector<Artists::ArtistItem>>();
             parseArtistsFromPage(QStringView(page_text), artists);
+
+            std::shared_ptr<QVector<Album::AlbumItem>> albums =
+                std::make_shared<QVector<Album::AlbumItem>>();
+            parseAlbumsFromPage(QStringView(page_text), albums);
+
             type = QUERY;
         }
 

@@ -40,6 +40,7 @@ qt_add_executable(MusicAppTests
     appexceptions.h appexceptions.cpp
     artistitem.h artistitem.cpp
     radioitem.h radioitem.cpp
+    albumitem.h albumitem.cpp
     config.h
 )
 
