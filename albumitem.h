@@ -17,9 +17,11 @@
 
 #include <QString>
 
+#include "musicitem.h"
+
 namespace Album {
 
-class AlbumItem
+class AlbumItem : MusicItem::MusicItem
 {
 public:
     explicit AlbumItem(QString name, QString year, QString id);

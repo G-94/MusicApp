@@ -18,3 +18,18 @@ QString Album::AlbumItem::getId() const noexcept
 {
     return id_;
 }
+
+int Album::AlbumItem::getPlayedCounter() const noexcept
+{
+    return played_counter_;
+}
+
+void Album::AlbumItem::setPlayedCounter(int new_val) noexcept
+{
+    played_counter_ = new_val;
+}
+
+void Album::AlbumItem::incrPlayedCounter() noexcept
+{
+    ++played_counter_;
+}

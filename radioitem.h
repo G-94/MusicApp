@@ -19,10 +19,11 @@
 #include <QString>
 
 #include "helperfunctions.h"
+#include "musicitem.h"
 
 namespace Radio {
 
-class RadioItem
+class RadioItem : MusicItem::MusicItem
 {
 public:
     explicit RadioItem(QString name, QString id, QString source_url, QString source_img_url);

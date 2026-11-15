@@ -34,7 +34,9 @@ private:
     QString name_;
     QString id_;
 
-signals:
+    // played counter
+    int played_times = 0;
+
 };
 
 }

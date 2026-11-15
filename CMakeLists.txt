@@ -19,6 +19,8 @@ qt_add_executable(MusicApp
     artistitem.h artistitem.cpp
     radioitem.h radioitem.cpp
     albumitem.h albumitem.cpp
+    collectionitem.h collectionitem.cpp
+    musicitem.h musicitem.cpp
 )
 
 target_link_libraries(MusicApp

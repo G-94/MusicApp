@@ -23,10 +23,11 @@
 #include <QDebug>
 
 #include "helperfunctions.h"
+#include "musicitem.h"
 
 namespace Song {
 
-class SongItem
+class SongItem : MusicItem::MusicItem
 {
 public:
     explicit SongItem(
