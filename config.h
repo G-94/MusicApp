@@ -12,11 +12,14 @@ const QString GENRE_BASE = "https://ru.hitmox.net/genre/";
 const QString COLLECTION_BASE = "https://ru.hitmox.net/collection/";
 const QString ALBUM_BASE = "https://ru.hitmox.net/album/";
 const QString ARTISTS_BASE = "https://ru.hitmox.net/artist/";
+const QString COLLECTIONS_BASE = "https://ru.hitmox.net/collections";
 
 const QString PAGE_BASE = "/start/";
 const int PAGE_STEP = 48;
 
 const QString RADIO_BASE = "https://ru.hitmox.net/radio";
+
+const QString EMPTY_PAGE_STR = "---";
 
 }
 

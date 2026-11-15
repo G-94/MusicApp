@@ -1,14 +1,14 @@
 #include "radioitem.h"
 
-Radio::RadioItem::RadioItem(QString name, QString id,
+Radio::RadioItem::RadioItem(QString title, QString id,
         QString source_url, QString source_img_url) :
-    name_(std::move(name)), id_(std::move(Helper::getOnlyNumericFromStr(id))),
+    title_(std::move(title)), id_(std::move(Helper::getOnlyNumericFromStr(id))),
     source_url_(std::move(source_url)), source_img_url_(std::move(source_img_url))
 {}
 
-QString Radio::RadioItem::getName() const noexcept
+QString Radio::RadioItem::getTitle() const noexcept
 {
-    return name_;
+    return title_;
 }
 
 QString Radio::RadioItem::getId() const noexcept

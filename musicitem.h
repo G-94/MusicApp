@@ -17,7 +17,7 @@ namespace MusicItem {
 class MusicItem
 {
 public:
-    MusicItem() noexcept;
+    MusicItem() = default;
 
     int getPlayedCounter() const noexcept;
     void setPlayedCounter(int new_val) noexcept;

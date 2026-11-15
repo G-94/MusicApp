@@ -10,7 +10,7 @@ using namespace Qt::StringLiterals;
 
 void Api::MusicApi::getSongsArtistsAlbumsByQuery(const QString &query, bool onlyOnePage)
 {
-    QUrl url(HTTP_Literals::QUERY_BASE + HTTP_Literals::PAGE_BASE + "---");
+    QUrl url(HTTP_Literals::QUERY_BASE + HTTP_Literals::PAGE_BASE + HTTP_Literals::EMPTY_PAGE_STR);
     url.setQuery(QUrlQuery{{"q", query}});
 
     if (not checkUrl(url)) {
@@ -25,7 +25,7 @@ void Api::MusicApi::getSongsArtistsAlbumsByQuery(const QString &query, bool only
 
 void Api::MusicApi::getSongsByGenre(QString genre, bool onlyOnePage)
 {
-    QUrl url(HTTP_Literals::GENRE_BASE + genre + HTTP_Literals::PAGE_BASE + "---");
+    QUrl url(HTTP_Literals::GENRE_BASE + genre + HTTP_Literals::PAGE_BASE + HTTP_Literals::EMPTY_PAGE_STR);
     if (not checkUrl(url)) return;
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
@@ -35,7 +35,7 @@ void Api::MusicApi::getSongsByGenre(QString genre, bool onlyOnePage)
 
 void Api::MusicApi::getSongsByArtist(QString artist_id, bool onlyOnePage)
 {
-    QUrl url(HTTP_Literals::ARTISTS_BASE + artist_id + HTTP_Literals::PAGE_BASE + "---");
+    QUrl url(HTTP_Literals::ARTISTS_BASE + artist_id + HTTP_Literals::PAGE_BASE + HTTP_Literals::EMPTY_PAGE_STR);
     if (not checkUrl(url)) return;
 
     std::shared_ptr<QVector<Song::SongItem>> accumulator = std::make_shared<QVector<Song::SongItem>>();
@@ -63,9 +63,23 @@ void Api::MusicApi::getSongsAlbum(QString album_id)
     fetchPage(url, accumulator, 0, ALBUM, true);
 }
 
+void Api::MusicApi::getCollections(int pages)
+{
+    QUrl url(HTTP_Literals::COLLECTIONS_BASE + HTTP_Literals::PAGE_BASE + HTTP_Literals::EMPTY_PAGE_STR);
+    if (not url.isValid()) {
+        emit loadingCollectionsFailed(Codes_Literals::INVALID_URL);
+        return;
+    }
+
+    std::shared_ptr<QVector<Collection::CollectionItem>> accumulator =
+        std::make_shared<QVector<Collection::CollectionItem>>();
+
+    fetchCollectionsPages(url, accumulator, 0, pages);
+}
+
 void Api::MusicApi::getRadios()
 {
-    QUrl url(HTTP_Literals::RADIO_BASE + HTTP_Literals::PAGE_BASE + "---");
+    QUrl url(HTTP_Literals::RADIO_BASE + HTTP_Literals::PAGE_BASE + HTTP_Literals::EMPTY_PAGE_STR);
     if (not url.isValid()) {
         emit loadingRadiosFailed(Codes_Literals::INVALID_URL);
         return;
@@ -170,6 +184,46 @@ void Api::MusicApi::parseRadiosFromPage(const QStringView page, RadiosVectorPtr 
     }
 }
 
+// parse page, finds collections; change accumulator
+void Api::MusicApi::parseCollectionsFromPage(const QStringView page, CollectionsVectorPtr accumulator)
+{
+    qsizetype block_start_idx = page.indexOf(u"<ul class=\"album-list\">"_sv);
+
+    if (block_start_idx == -1) {
+        emit collectionsListLoaded(accumulator);
+        return;
+    }
+
+    QStringView block_start_text = page.mid(
+        block_start_idx + qsizetype(u"<ul class=\"album-list\">"_sv.length())
+    );
+
+    QList<QStringView> blocks = block_start_text.left(
+        block_start_text.indexOf(u"</ul>"_sv)).split(u"album-item"_sv).sliced(1);
+
+    for (const QStringView& block : std::as_const(blocks)) {
+        QStringView id_start_text = block.mid(block.indexOf(u"/collection/"_sv)
+            + qsizetype(u"/collection/"_sv.length()));
+
+        QString id = QString(id_start_text.left(
+            id_start_text.indexOf(u"\""_sv))
+        );
+
+        QStringView title_start_text = block.mid(block.indexOf(u"\"album-title\">"_sv) +
+            qsizetype(u"\"album-title\">"_sv.length())
+        );
+
+        QString title = QString(title_start_text.left(
+            title_start_text.indexOf(u"</span>"_sv))
+        );
+
+        accumulator->append(Collection::CollectionItem{
+            title,
+            id
+        });
+    }
+}
+
 // get radios from pages/page
 void Api::MusicApi::fetchRadiosPages(QUrl url, RadiosVectorPtr accumulator, int page, bool onlyOne)
 {
@@ -179,7 +233,7 @@ void Api::MusicApi::fetchRadiosPages(QUrl url, RadiosVectorPtr accumulator, int 
     QObject::connect(reply, &QNetworkReply::finished, [this, reply, url, accumulator, page, onlyOne]() mutable {
         reply->deleteLater();
 
-        url = QUrl(url.toString().replace("---", QString::number(page)));
+        url = QUrl(url.toString().replace(HTTP_Literals::EMPTY_PAGE_STR, QString::number(page)));
 
         if(reply->error() != QNetworkReply::NoError) {
             emit loadingRadiosFailed(Codes_Literals::REPLY_ERROR);
@@ -202,6 +256,40 @@ void Api::MusicApi::fetchRadiosPages(QUrl url, RadiosVectorPtr accumulator, int 
         QUrl next_url = replacePageToEmpty(url, page);
 
         fetchRadiosPages(next_url, accumulator, page + 48);
+    });
+}
+
+void Api::MusicApi::fetchCollectionsPages(QUrl url, CollectionsVectorPtr accumulator, int page, int limit)
+{
+    QNetworkRequest request(url);
+    QNetworkReply* reply = manager_->get(request);
+
+    QObject::connect(reply, &QNetworkReply::finished, [this, reply, url, accumulator, page, limit]() mutable {
+        reply->deleteLater();
+
+        url = QUrl(url.toString().replace(HTTP_Literals::EMPTY_PAGE_STR, QString::number(page)));
+
+        if(reply->error() != QNetworkReply::NoError) {
+            emit loadingCollectionsFailed(Codes_Literals::REPLY_ERROR);
+            return;
+        }
+
+        QString page_text = reply->readAll();
+
+        try {
+            parseCollectionsFromPage(page_text, accumulator);
+        } catch (const QException& e) {
+            emit loadingCollectionsFailed(e.what());
+        }
+
+        if ((limit != -1 and page >= (limit * 48)) or page >= 3000) {
+            emit collectionsListLoaded(accumulator);
+            return;
+        }
+
+        QUrl next_url = replacePageToEmpty(url, page);
+
+        fetchCollectionsPages(next_url, accumulator, page + 48, limit);
     });
 }
 
@@ -304,7 +392,7 @@ void Api::MusicApi::fetchPage(QUrl url, std::shared_ptr<QVector<Song::SongItem>>
 {
     // change empty part of string to insert page counter
     if (type != COLLECTION and type != ALBUM) {
-        url = QUrl(url.toString().replace("---", QString::number(page)));
+        url = QUrl(url.toString().replace(HTTP_Literals::EMPTY_PAGE_STR, QString::number(page)));
     }
 
     QNetworkRequest request(url);

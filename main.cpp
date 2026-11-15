@@ -7,26 +7,25 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     Api::MusicApi m;
-    m.getSongsArtistsAlbumsByQuery("Flash");
+    // m.getSongsArtistsAlbumsByQuery("Flash");
 
-    QObject::connect(&m, &Api::MusicApi::songsByQueryLoaded, [] (std::shared_ptr<QVector<Song::SongItem>> res) {
-        for (auto& el : *res) {
-            qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
-        }
-    });
+    // QObject::connect(&m, &Api::MusicApi::songsByQueryLoaded, [] (std::shared_ptr<QVector<Song::SongItem>> res) {
+    //     for (auto& el : *res) {
+    //         qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
+    //     }
+    // });
 
-    QObject::connect(&m, &Api::MusicApi::artistsListLoaded, [] (std::shared_ptr<QVector<Artists::ArtistItem>> res) {
-        for (auto& el : *res) {
-            qDebug() << el.getName() << el.getId() << "\n";
-        }
-    });
+    // QObject::connect(&m, &Api::MusicApi::artistsListLoaded, [] (std::shared_ptr<QVector<Artists::ArtistItem>> res) {
+    //     for (auto& el : *res) {
+    //         qDebug() << el.getName() << el.getId() << "\n";
+    //     }
+    // });
 
-    QObject::connect(&m, &Api::MusicApi::albumsListLoaded, [] (std::shared_ptr<QVector<Album::AlbumItem>> res) {
-        for (auto& el : *res) {
-            qDebug() << el.getName() << el.getYear() << el.getId() << "\n";
-        }
-    });
-
+    // QObject::connect(&m, &Api::MusicApi::albumsListLoaded, [] (std::shared_ptr<QVector<Album::AlbumItem>> res) {
+    //     for (auto& el : *res) {
+    //         qDebug() << el.getTitle() << el.getYear() << el.getId() << "\n";
+    //     }
+    // });
 
     // m.getSongsByGenre("51");
 
@@ -68,6 +67,13 @@ int main(int argc, char *argv[])
     //     }
     // });
 
+    m.getCollections(2);
+
+    QObject::connect(&m, &Api::MusicApi::collectionsListLoaded, [] (std::shared_ptr<QVector<Collection::CollectionItem>> res) {
+        for (auto& el : *res) {
+            qDebug() << el.getTitle()<< el.getId() << "\n";
+        }
+    });
 
     return QApplication::exec();
 }

@@ -15,12 +15,13 @@
 #ifndef ARTISTITEM_H
 #define ARTISTITEM_H
 
-#include <QObject>
 #include <QString>
+
+#include "musicitem.h"
 
 namespace Artists {
 
-class ArtistItem
+class ArtistItem : MusicItem::MusicItem
 {
 
 public:
@@ -33,9 +34,6 @@ private:
 
     QString name_;
     QString id_;
-
-    // played counter
-    int played_times = 0;
 
 };
 

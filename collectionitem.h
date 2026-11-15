@@ -4,7 +4,7 @@
 
     AlbumItem store albums main data
 
-    name_ - name of album
+    title_ - name of album
     year_ - store year of album
     id_ - used to find albums songs, get album page
 
@@ -17,27 +17,23 @@
 
 #include <QString>
 
+#include "musicitem.h"
+
 namespace Collection {
 
-class CollectionItem
+class CollectionItem : MusicItem::MusicItem
 {
 public:
-    explicit CollectionItem(QString name, QString id);
+    explicit CollectionItem(QString title, QString id);
 
-    QString getName() const noexcept;
+    QString getTitle() const noexcept;
     QString getId() const noexcept;
-
-    int getPlayedCounter() const noexcept;
-    void setPlayedCounter(int new_val) noexcept;
-    void incrPlayedCounter() noexcept;
 
 private:
 
-    QString name_;
+    QString title_;
     QString id_;
 
-    // played counter
-    int played_counter_ = 0;
 };
 
 }

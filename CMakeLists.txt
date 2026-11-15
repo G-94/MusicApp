@@ -43,6 +43,8 @@ qt_add_executable(MusicAppTests
     artistitem.h artistitem.cpp
     radioitem.h radioitem.cpp
     albumitem.h albumitem.cpp
+    collectionitem.h collectionitem.cpp
+    musicitem.h musicitem.cpp
     config.h
 )
 

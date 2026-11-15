@@ -28,6 +28,7 @@
 #include "artistitem.h"
 #include "radioitem.h"
 #include "albumitem.h"
+#include "collectionitem.h"
 #include "appexceptions.h"
 
 namespace Api {
@@ -36,6 +37,7 @@ using SongsVectorPtr = std::shared_ptr<QVector<Song::SongItem>>;
 using ArtistsVectorPtr = std::shared_ptr<QVector<Artists::ArtistItem>>;
 using RadiosVectorPtr = std::shared_ptr<QVector<Radio::RadioItem>>;
 using AlbumsVectorPtr = std::shared_ptr<QVector<Album::AlbumItem>>;
+using CollectionsVectorPtr = std::shared_ptr<QVector<Collection::CollectionItem>>;
 
 enum EMIT_TYPE {
     QUERY_SONGS_ARTISTS_ALBUMS,
@@ -58,6 +60,7 @@ public:
     void getSongsCollection(QString collection_id);
     void getSongsAlbum(QString album_id);
 
+    void getCollections(int pages = -1);
     void getRadios();
 
 private:
@@ -75,11 +78,13 @@ signals:
     void artistsListLoaded(std::shared_ptr<QVector<Artists::ArtistItem>> result);
     void albumsListLoaded(std::shared_ptr<QVector<Album::AlbumItem>> result);
     void radiosListLoaded(std::shared_ptr<QVector<Radio::RadioItem>> result);
+    void collectionsListLoaded(std::shared_ptr<QVector<Collection::CollectionItem>>);
 
     void loadingSongsFailed(QString msg);
     void loadingArtistsFailed(QString msg);
     void loadingAlbumsFailed(QString msg);
     void loadingRadiosFailed(QString msg);
+    void loadingCollectionsFailed(QString msg);
 
 private:
 
@@ -95,6 +100,9 @@ private:
     // parse page, finds radios; change result
     void parseRadiosFromPage(const QStringView page, RadiosVectorPtr accumulator);
 
+    // parse page, finds collections; change accumulator
+    void parseCollectionsFromPage(const QStringView page, CollectionsVectorPtr accumulator);
+
     // get songs from pages/page
     void fetchPage(QUrl url, SongsVectorPtr accumulator,
         int page, EMIT_TYPE type, bool onlyOne = false);
@@ -102,6 +110,10 @@ private:
     // get radios from pages/page
     void fetchRadiosPages(QUrl url, RadiosVectorPtr accumulator,
         int page, bool onlyOne = false);
+
+    // get collections from page/pages
+    void fetchCollectionsPages(QUrl url, CollectionsVectorPtr accumulator,
+        int page, int limit = -1);
 
     //choose signal for songs query
     void chooseSignalSongList(EMIT_TYPE type, SongsVectorPtr arg);
