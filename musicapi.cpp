@@ -497,7 +497,7 @@ QUrl Api::MusicApi::replacePageToEmpty(QUrl url, int page)
     QUrl next_url = QUrl(temp_url.replace(
         temp_url.indexOf(HTTP_Literals::PAGE_BASE) +
             qsizetype(HTTP_Literals::PAGE_BASE.length()),
-        QString::number(page).length(), "---")
+        QString::number(page).length(), HTTP_Literals::EMPTY_PAGE_STR)
     );
 
     return next_url;

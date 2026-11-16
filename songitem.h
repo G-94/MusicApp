@@ -47,7 +47,11 @@ public:
     QString& getSourceUrl() noexcept;
     QString& getImgUrl() noexcept;
     bool isPlayable() const noexcept;
+    bool isLiked() const noexcept;
+    bool isDownloaded() const noexcept;
 
+    void setLikeStatus(bool state) noexcept;
+    void setDownloadStatus(bool state) noexcept;
 private:
 
 // song meta data
@@ -65,6 +69,8 @@ private:
 
 // state of song
     bool is_playable_ = true;
+    bool is_liked_ = false;
+    bool is_downloaded_ = false;
 
 //init success flag
     bool isSuccess;
