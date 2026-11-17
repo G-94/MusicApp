@@ -2,8 +2,7 @@
 
 -------------------------------------------------------------------------
 
-    Classes of exceptions what used in other classes
-    QException is base class for all self-made exceptions
+
 
 -------------------------------------------------------------------------
 
@@ -14,8 +13,11 @@
 
 #include <QString>
 #include <QVector>
+#include <QFile>
+#include <QSaveFile>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonParseError>
 
 #include "songitem.h"
 #include "radioitem.h"
@@ -29,6 +31,12 @@ class UserDataLoader
 {
 public:
     UserDataLoader();
+
+private:
+
+    QJsonObject load(const QString& path);
+    bool save(const QString& path, const QJsonObject& data);
+
 };
 
 }

@@ -4,7 +4,7 @@ QJsonObject User_Data::UserDataLoader::load(const QString &path)
 {
     QFile file(path);
     if (not file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "error on openning file " << path;
+        qDebug() << "error loading on openning file " << path;
         return {};
     }
 
@@ -15,12 +15,12 @@ QJsonObject User_Data::UserDataLoader::load(const QString &path)
     const QJsonDocument doc = QJsonDocument::fromJson(data, &err);
 
     if(err.error != QJsonParseError::NoError) {
-        qDebug() << "error on parse data " << path;
+        qDebug() << "error loading on parse data " << path;
         return {};
     }
 
     if (not doc.isObject()) {
-        qDebug() << "error json doc not an object";
+        qDebug() << "error loading json doc not an object";
         return {};
     }
 
@@ -31,7 +31,7 @@ bool User_Data::UserDataLoader::save(const QString &path, const QJsonObject& dat
 {
     QSaveFile file(path);
     if (not file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "error on openning file " << path;
+        qDebug() << "error saving on openning file " << path;
         return {};
     }
 
@@ -39,16 +39,19 @@ bool User_Data::UserDataLoader::save(const QString &path, const QJsonObject& dat
     const QByteArray json_data = doc.toJson(QJsonDocument::Indented);
 
     if (file.write(json_data) != json_data.size()) {
-        qDebug() << "error on writen file" << file.errorString();
+        qDebug() << "error saving on writing file" << file.errorString();
         file.cancelWriting();
         return false;
     }
 
     if(not file.commit()) {
-        qDebug() << "error on commit file" << file.errorString();
+        qDebug() << "error saving on commit file" << file.errorString();
         return false;
     }
 
     return true;
 }
+QString User_Data::liked_songs_path()
+{
 
+}
