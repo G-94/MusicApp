@@ -22,3 +22,15 @@ QJsonObject Collection::CollectionItem::toJson()
     obj["playedCounter"] = getPlayedCounter();
     return obj;
 }
+
+Collection::CollectionItem Collection::CollectionItem::fromJson(const QJsonObject &obj)
+{
+    Collection::CollectionItem item {
+        obj.value("title").toString(),
+        obj.value("id").toString(),
+    };
+
+    item.setPlayedCounter(obj.value("playedCounter").toInt());
+
+    return item;
+}

@@ -30,8 +30,23 @@ QJsonObject Radio::RadioItem::toJson()
 {
     QJsonObject obj;
     obj["title"] = title_;
+    obj["id"] = id_;
     obj["url"] = source_url_;
     obj["imgUrl"] = source_img_url_;
     obj["playedCounter"] = getPlayedCounter();
     return obj;
+}
+
+Radio::RadioItem Radio::RadioItem::fromJson(const QJsonObject &obj)
+{
+    Radio::RadioItem item {
+        obj.value("title").toString(),
+        obj.value("id").toString(),
+        obj.value("url").toString(),
+        obj.value("img").toString()
+    };
+
+    item.setPlayedCounter(obj.value("playedCounter").toInt());
+
+    return item;
 }

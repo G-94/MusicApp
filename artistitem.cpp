@@ -22,3 +22,8 @@ QJsonObject Artists::ArtistItem::toJson()
     obj["playedCounter"] = getPlayedCounter();
     return obj;
 }
+
+Artists::ArtistItem Artists::ArtistItem::fromJson(const QJsonObject &obj)
+{
+
+}

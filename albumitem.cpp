@@ -21,5 +21,23 @@ QString Album::AlbumItem::getId() const noexcept
 
 QJsonObject Album::AlbumItem::toJson()
 {
+    QJsonObject obj;
+    obj["title"] = title_;
+    obj["id"] = id_;
+    obj["year"] = year_;
+    obj["playedCounter"] = getPlayedCounter();
+    return obj;
+}
 
+Album::AlbumItem Album::AlbumItem::fromJson(const QJsonObject &obj)
+{
+    Album::AlbumItem item {
+        obj.value("title").toString(),
+        obj.value("year").toString(),
+        obj.value("id").toString()
+    };
+
+    item.setPlayedCounter(obj.value("playedCounter").toInt());
+
+    return item;
 }

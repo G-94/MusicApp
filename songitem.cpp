@@ -79,15 +79,33 @@ void Song::SongItem::setDownloadStatus(bool state) noexcept
 QJsonObject Song::SongItem::toJson()
 {
     QJsonObject obj;
-    obj["title"] = title_;
     obj["author"] = author_;
+    obj["title"] = title_;
     obj["url"] = source_url_;
-    obj["imgUrl"] = source_img_url_;
+    obj["img"] = source_img_url_;
     obj["duration"] = text_duration_;
     obj["id"] = id_;
     obj["playedCounter"] = getPlayedCounter();
     obj["isLiked"] = is_liked_;
     obj["isDownloaded"] = is_downloaded_;
     return obj;
+}
+
+Song::SongItem Song::SongItem::fromJson(const QJsonObject& obj)
+{
+    Song::SongItem item {
+        obj.value("author").toString(),
+        obj.value("title").toString(),
+        obj.value("url").toString(),
+        obj.value("img").toString(),
+        obj.value("id").toString(),
+        obj.value("duration").toString()
+    };
+
+    item.setLikeStatus(obj.value("isLiked").toBool());
+    item.setDownloadStatus(obj.value("isDownloaded").toBool());
+    item.setPlayedCounter(obj.value("playedCounter").toInt());
+
+    return item;
 }
 
