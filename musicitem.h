@@ -27,6 +27,7 @@ private:
 
     // played counter
     int played_counter_ = 0;
+
 };
 
 }

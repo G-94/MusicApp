@@ -55,3 +55,23 @@ bool Song::SongItem::isPlayable() const noexcept
 {
     return is_playable_;
 }
+
+bool Song::SongItem::isLiked() const noexcept
+{
+    return is_liked_;
+}
+
+bool Song::SongItem::isDownloaded() const noexcept
+{
+    return is_downloaded_;
+}
+
+void Song::SongItem::setLikeStatus(bool state) noexcept
+{
+    is_liked_ = state;
+}
+
+void Song::SongItem::setDownloadStatus(bool state) noexcept
+{
+    is_downloaded_ = state;
+}
