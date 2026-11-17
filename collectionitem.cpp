@@ -13,3 +13,12 @@ QString Collection::CollectionItem::getId() const noexcept
 {
     return id_;
 }
+
+QJsonObject Collection::CollectionItem::toJson()
+{
+    QJsonObject obj;
+    obj["title"] = title_;
+    obj["id"] = id_;
+    obj["playedCounter"] = getPlayedCounter();
+    return obj;
+}

@@ -18,7 +18,7 @@
 #ifndef SONGITEM_H
 #define SONGITEM_H
 
-#include <QObject>
+#include <QJsonObject>
 #include <QString>
 #include <QDebug>
 
@@ -42,8 +42,8 @@ public:
     QString& getTitle() noexcept;
     QString& getAuthor() noexcept;
     QString& getTextDuration() noexcept;
-    quint16 getDuration() const noexcept;
-    quint32 getId() const noexcept;
+    unsigned short getDuration() const noexcept;
+    QString getId() const noexcept;
     QString& getSourceUrl() noexcept;
     QString& getImgUrl() noexcept;
     bool isPlayable() const noexcept;
@@ -54,16 +54,25 @@ public:
     void setLikeStatus(bool state) noexcept;
     void setDownloadStatus(bool state) noexcept;
 
+    QJsonObject toJson() override
+    {
+        QJsonObject obj;
+        obj["title"] = title_;
+        obj["author"] = author_;
+        obj["id"] = id_;
+        return
+    }
+
 private:
 
 // song meta data
     QString title_;
     QString author_;
 
-    quint16 duration_;
+    unsigned short duration_;
     QString text_duration_;
 
-    quint32 id_;
+    QString id_;
 
 // song source data
     QString source_img_url_;

@@ -18,7 +18,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonParseError>
+#include <type_traits>
 
+#include "musicitem.h"
 #include "songitem.h"
 #include "radioitem.h"
 #include "albumitem.h"
@@ -36,6 +38,21 @@ private:
 
     QJsonObject load(const QString& path);
     bool save(const QString& path, const QJsonObject& data);
+
+public:
+
+    template <typename Item>
+    bool LoadMusicItem(const QString& path, QVector<MusicItem::MusicItem> data) {
+        static_assert(std::is_base_of<MusicItem::MusicItem, Item>::value,
+                      "only MusicItems sub-classes are allowed");
+
+    }
+
+    template <typename Item>
+    bool SaveMusicItem(const QString& path, QVector<MusicItem::MusicItem> data) {
+        static_assert(std::is_base_of<MusicItem::MusicItem, Item>::value,
+                      "only MusicItems sub-classes are allowed");
+    }
 
 };
 

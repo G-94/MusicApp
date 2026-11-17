@@ -18,3 +18,8 @@ QString Album::AlbumItem::getId() const noexcept
 {
     return id_;
 }
+
+QJsonObject Album::AlbumItem::toJson()
+{
+
+}

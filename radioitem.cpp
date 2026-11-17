@@ -25,3 +25,13 @@ QString Radio::RadioItem::getSourceImgUrl() const noexcept
 {
     return source_img_url_;
 }
+
+QJsonObject Radio::RadioItem::toJson()
+{
+    QJsonObject obj;
+    obj["title"] = title_;
+    obj["url"] = source_url_;
+    obj["imgUrl"] = source_img_url_;
+    obj["playedCounter"] = getPlayedCounter();
+    return obj;
+}

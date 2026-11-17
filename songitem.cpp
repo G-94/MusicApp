@@ -4,7 +4,7 @@ Song::SongItem::SongItem(
     QString author, QString title, QString source_url,
     QString img_url, QString id, QString duration) noexcept :
     author_(std::move(author)), title_(std::move(title)), source_url_(Helper::checkSourceUrl(source_url)),
-    source_img_url_(std::move(img_url)), id_(QStringView(id).mid(id.lastIndexOf("-") + 1).toInt(&isSuccess)),
+    source_img_url_(std::move(img_url)), id_(QStringView(id).mid(id.lastIndexOf("-") + 1)),
     text_duration_(duration), duration_(Helper::castTextDurationToInt(duration))
 {
     if (not isSuccess) {
@@ -31,12 +31,12 @@ QString &Song::SongItem::getTextDuration() noexcept
     return text_duration_;
 }
 
-quint16 Song::SongItem::getDuration() const noexcept
+unsigned short Song::SongItem::getDuration() const noexcept
 {
     return duration_;
 }
 
-quint32 Song::SongItem::getId() const noexcept
+QString Song::SongItem::getId() const noexcept
 {
     return id_;
 }
@@ -75,3 +75,19 @@ void Song::SongItem::setDownloadStatus(bool state) noexcept
 {
     is_downloaded_ = state;
 }
+
+QJsonObject Song::SongItem::toJson()
+{
+    QJsonObject obj;
+    obj["title"] = title_;
+    obj["author"] = author_;
+    obj["url"] = source_url_;
+    obj["imgUrl"] = source_img_url_;
+    obj["duration"] = text_duration_;
+    obj["id"] = id_;
+    obj["playedCounter"] = getPlayedCounter();
+    obj["isLiked"] = is_liked_;
+    obj["isDownloaded"] = is_downloaded_;
+    return obj;
+}
+

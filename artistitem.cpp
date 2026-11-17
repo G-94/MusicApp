@@ -13,3 +13,12 @@ QString Artists::ArtistItem::getId() const noexcept
 {
     return id_;
 }
+
+QJsonObject Artists::ArtistItem::toJson()
+{
+    QJsonObject obj;
+    obj["name"] = name_;
+    obj["id"] = id_;
+    obj["playedCounter"] = getPlayedCounter();
+    return obj;
+}

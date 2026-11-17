@@ -1,3 +1,14 @@
+/*
+
+-------------------------------------------------------------------------
+
+    Paths getters that helpes to get file path
+        with all Android System rules
+
+-------------------------------------------------------------------------
+
+*/
+
 #ifndef PATHS_H
 #define PATHS_H
 
