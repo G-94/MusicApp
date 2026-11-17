@@ -2,11 +2,10 @@
 
 -------------------------------------------------------------------------
 
-    AlbumItem store albums main data
-
-    title_ - name of album
-    year_ - store year of album
-    id_ - used to find albums songs, get album page
+    CollectionItem store collection main data
+        Collection like album but songs chosen by resource
+    title_ - name of collection
+    id_ - used to find collections songs, get collection page
 
 -------------------------------------------------------------------------
 

@@ -55,8 +55,3 @@ bool Song::SongItem::isPlayable() const noexcept
 {
     return is_playable_;
 }
-
-bool Song::SongItem::isLiked() const noexcept
-{
-
-}
