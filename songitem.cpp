@@ -76,7 +76,7 @@ void Song::SongItem::setDownloadStatus(bool state) noexcept
     is_downloaded_ = state;
 }
 
-QJsonObject Song::SongItem::toJson()
+QJsonObject Song::SongItem::toJson() const
 {
     QJsonObject obj;
     obj["author"] = author_;

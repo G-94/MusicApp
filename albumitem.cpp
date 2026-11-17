@@ -19,7 +19,7 @@ QString Album::AlbumItem::getId() const noexcept
     return id_;
 }
 
-QJsonObject Album::AlbumItem::toJson()
+QJsonObject Album::AlbumItem::toJson() const
 {
     QJsonObject obj;
     obj["title"] = title_;

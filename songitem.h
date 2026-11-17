@@ -54,14 +54,8 @@ public:
     void setLikeStatus(bool state) noexcept;
     void setDownloadStatus(bool state) noexcept;
 
-    QJsonObject toJson() override
-    {
-        QJsonObject obj;
-        obj["title"] = title_;
-        obj["author"] = author_;
-        obj["id"] = id_;
-        return
-    }
+    QJsonObject toJson() const override;
+    static SongItem fromJson(const QJsonObject& obj);
 
 private:
 

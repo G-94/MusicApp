@@ -26,7 +26,7 @@ QString Radio::RadioItem::getSourceImgUrl() const noexcept
     return source_img_url_;
 }
 
-QJsonObject Radio::RadioItem::toJson()
+QJsonObject Radio::RadioItem::toJson() const
 {
     QJsonObject obj;
     obj["title"] = title_;

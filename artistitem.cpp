@@ -14,7 +14,7 @@ QString Artists::ArtistItem::getId() const noexcept
     return id_;
 }
 
-QJsonObject Artists::ArtistItem::toJson()
+QJsonObject Artists::ArtistItem::toJson() const
 {
     QJsonObject obj;
     obj["name"] = name_;
@@ -25,5 +25,12 @@ QJsonObject Artists::ArtistItem::toJson()
 
 Artists::ArtistItem Artists::ArtistItem::fromJson(const QJsonObject &obj)
 {
+    Artists::ArtistItem item {
+        obj.value("title").toString(),
+        obj.value("id").toString(),
+    };
 
+    item.setPlayedCounter(obj.value("playedCounter").toInt());
+
+    return item;
 }

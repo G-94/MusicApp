@@ -1,6 +1,8 @@
 #include <QApplication>
 
 #include "musicapi.h"
+#include "paths.h"
+#include "userdataloader.h"
 
 int main(int argc, char *argv[])
 {
@@ -70,7 +72,17 @@ int main(int argc, char *argv[])
     m.getCollections(2);
 
     QObject::connect(&m, &Api::MusicApi::collectionsListLoaded, [] (std::shared_ptr<QVector<Collection::CollectionItem>> res) {
+        User_Data::UserDataLoader ld;
+        ld.SaveMusicItems(Paths::familiarCollectionsPath(), *res);
         for (auto& el : *res) {
+            qDebug() << el.getTitle()<< el.getId() << "\n";
+        }
+
+        qDebug("fdskfdsfdlsfjdskfn\n\\n\n\n\n\n\\n\n\n\n\n\n");
+        QVector<Collection::CollectionItem> te;
+        ld.LoadMusicItems(Paths::familiarCollectionsPath(), te);
+
+        for (auto& el : te) {
             qDebug() << el.getTitle()<< el.getId() << "\n";
         }
     });

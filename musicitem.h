@@ -12,6 +12,8 @@
 #ifndef MUSICITEM_H
 #define MUSICITEM_H
 
+#include <QJsonObject>
+
 namespace MusicItem {
 
 class MusicItem
@@ -22,6 +24,8 @@ public:
     int getPlayedCounter() const noexcept;
     void setPlayedCounter(int new_val) noexcept;
     void incrPlayedCounter() noexcept;
+
+    virtual QJsonObject toJson() const = 0;
 
 private:
 

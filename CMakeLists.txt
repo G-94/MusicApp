@@ -37,10 +37,12 @@ target_link_libraries(MusicApp
 enable_testing()
 
 qt_add_executable(MusicAppTests
-    musicapitests.h musicapitests.cpp
-    # Исходники, которые тестируем, — компилируются ещё раз в тестовую цель
+    main.cpp
+    mainwindow.cpp
+    mainwindow.h
     musicapi.h musicapi.cpp
     songitem.h songitem.cpp
+    config.h
     helperfunctions.h helperfunctions.cpp
     appexceptions.h appexceptions.cpp
     artistitem.h artistitem.cpp
@@ -48,7 +50,9 @@ qt_add_executable(MusicAppTests
     albumitem.h albumitem.cpp
     collectionitem.h collectionitem.cpp
     musicitem.h musicitem.cpp
-    config.h
+    userdataloader.h
+    userdataloader.cpp
+    paths.h
 )
 
 target_link_libraries(MusicAppTests

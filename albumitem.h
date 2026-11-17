@@ -30,6 +30,9 @@ public:
     QString getYear() const noexcept;
     QString getId() const noexcept;
 
+    QJsonObject toJson() const override;
+    static Album::AlbumItem fromJson(const QJsonObject& obj);
+
 private:
 
     QString title_;

@@ -16,6 +16,7 @@
 #define COLLECTIONITEM_H
 
 #include <QString>
+#include <QJsonObject>
 
 #include "musicitem.h"
 
@@ -28,6 +29,9 @@ public:
 
     QString getTitle() const noexcept;
     QString getId() const noexcept;
+
+    QJsonObject toJson() const override;
+    static Collection::CollectionItem fromJson(const QJsonObject& obj);
 
 private:
 

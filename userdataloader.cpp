@@ -1,17 +1,5 @@
 #include "userdataloader.h"
 
-bool User_Data::UserDataLoader::LoadMusicItem(const QString &path, std::shared_ptr<QVector<MusicItem::MusicItem> > data)
-{
-
-    return true;
-}
-
-bool User_Data::UserDataLoader::SaveMusicItem(const QString &path, std::shared_ptr<QVector<MusicItem::MusicItem> > data)
-{
-
-    return true;
-}
-
 QJsonObject User_Data::UserDataLoader::load(const QString &path)
 {
     QFile file(path);
@@ -62,14 +50,4 @@ bool User_Data::UserDataLoader::save(const QString &path, const QJsonObject& dat
     }
 
     return true;
-}
-QString User_Data::liked_songs_path()
-{
-
-}
-
-template<typename Item>
-bool User_Data::UserDataLoader::LoadMusicItem(const QString &path, QVector<MusicItem::MusicItem> data)
-{
-
 }

@@ -17,6 +17,7 @@
 #define RADIOITEM_H
 
 #include <QString>
+#include <QJsonObject>
 
 #include "helperfunctions.h"
 #include "musicitem.h"
@@ -32,6 +33,9 @@ public:
     QString getId() const noexcept;
     QString getSourceUrl() const noexcept;
     QString getSourceImgUrl() const noexcept;
+
+    QJsonObject toJson() const override;
+    static Radio::RadioItem fromJson(const QJsonObject& obj);
 
 private:
 

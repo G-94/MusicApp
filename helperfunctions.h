@@ -20,7 +20,7 @@
 #include "config.h"
 
 namespace Helper {
-quint32 castTextDurationToInt(const QString& duration) noexcept;
+unsigned int castTextDurationToInt(const QString& duration) noexcept;
 
 QString checkSourceUrl(QString url);
 

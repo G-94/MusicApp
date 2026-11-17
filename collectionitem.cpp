@@ -14,7 +14,7 @@ QString Collection::CollectionItem::getId() const noexcept
     return id_;
 }
 
-QJsonObject Collection::CollectionItem::toJson()
+QJsonObject Collection::CollectionItem::toJson() const
 {
     QJsonObject obj;
     obj["title"] = title_;

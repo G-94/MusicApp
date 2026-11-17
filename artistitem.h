@@ -16,6 +16,7 @@
 #define ARTISTITEM_H
 
 #include <QString>
+#include <QJsonObject>
 
 #include "musicitem.h"
 
@@ -29,6 +30,9 @@ public:
 
     QString getName() const noexcept;
     QString getId() const noexcept;
+
+    QJsonObject toJson() const override;
+    static Artists::ArtistItem fromJson(const QJsonObject& obj);
 
 private:
 
