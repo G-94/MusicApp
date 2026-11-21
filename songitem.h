@@ -82,7 +82,7 @@ private:
     bool is_downloaded_ = false;
 
 //init success flag
-    bool isSuccess;
+    bool isSuccess = true;
 
 signals:
 };
