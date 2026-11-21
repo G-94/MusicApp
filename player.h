@@ -38,6 +38,13 @@ private:
     QMediaPlayer* player_;
     QAudioOutput* output_;
 
+signals:
+
+    void error(QString message);
+    void playbackStateChanged(QMediaPlayer::PlaybackState state);
+    void positionChanged(unsigned int position);
+    void durationChanged(unsigned int duration);
+
 };
 
 }
