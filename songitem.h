@@ -81,9 +81,6 @@ private:
     bool is_liked_ = false;
     bool is_downloaded_ = false;
 
-//init success flag
-    bool isSuccess = true;
-
 signals:
 };
 
