@@ -16,17 +16,17 @@ Song::SongItem::SongItem(
     qDebug() << "Create song item with id: " << id_ << "\n";
 }
 
-QString& Song::SongItem::getTitle() noexcept
+QString Song::SongItem::getTitle() const noexcept
 {
     return title_;
 }
 
-QString &Song::SongItem::getAuthor() noexcept
+QString Song::SongItem::getAuthor() const noexcept
 {
     return author_;
 }
 
-QString &Song::SongItem::getTextDuration() noexcept
+QString Song::SongItem::getTextDuration() const noexcept
 {
     return text_duration_;
 }
@@ -41,14 +41,19 @@ QString Song::SongItem::getId() const noexcept
     return id_;
 }
 
-QString &Song::SongItem::getSourceUrl() noexcept
+QString Song::SongItem::getSourceUrl() const noexcept
 {
     return source_url_;
 }
 
-QString &Song::SongItem::getImgUrl() noexcept
+QString Song::SongItem::getImgUrl() const noexcept
 {
     return source_img_url_;
+}
+
+QString Song::SongItem::getLocalPath() const noexcept
+{
+    return local_path_;
 }
 
 bool Song::SongItem::isPlayable() const noexcept
@@ -76,6 +81,11 @@ void Song::SongItem::setDownloadStatus(bool state) noexcept
     is_downloaded_ = state;
 }
 
+void Song::SongItem::setLocalPath(const QString &path)
+{
+    local_path_ = path;
+}
+
 QJsonObject Song::SongItem::toJson() const
 {
     QJsonObject obj;
@@ -88,6 +98,11 @@ QJsonObject Song::SongItem::toJson() const
     obj["playedCounter"] = getPlayedCounter();
     obj["isLiked"] = is_liked_;
     obj["isDownloaded"] = is_downloaded_;
+
+    if (is_downloaded_) {
+        obj["localPath"] = local_path_;
+    }
+
     return obj;
 }
 
@@ -105,6 +120,10 @@ Song::SongItem Song::SongItem::fromJson(const QJsonObject& obj)
     item.setLikeStatus(obj.value("isLiked").toBool());
     item.setDownloadStatus(obj.value("isDownloaded").toBool());
     item.setPlayedCounter(obj.value("playedCounter").toInt());
+
+    if (item.isDownloaded()) {
+        item.setLocalPath(obj.value("localPath").toString());
+    }
 
     return item;
 }

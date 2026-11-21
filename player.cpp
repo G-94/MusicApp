@@ -1,0 +1,48 @@
+#include "player.h"
+
+MusicPlayer::Player::Player() : player_(nullptr), output_(nullptr)
+{
+    player_ = new QMediaPlayer(this);
+    output_ = new QAudioOutput(this);
+
+    player_->setAudioOutput(output_);
+    output_->setVolume(1.0);
+
+    QObject::connect(player_, &QMediaPlayer::errorOccurred, this,
+            [this](QMediaPlayer::Error, const QString &msg) { emit error(msg); });
+    QObject::connect(player_, &QMediaPlayer::playbackStateChanged, this, &Player::playbackStateChanged);
+    QObject::connect(player_, &QMediaPlayer::positionChanged, this, &Player::positionChanged);
+    QObject::connect(player_, &QMediaPlayer::durationChanged, this, &Player::durationChanged);
+}
+
+bool MusicPlayer::Player::setSong(const Song::SongItem &song)
+{
+    if (not song.isPlayable()) return false;
+
+    QUrl url = QUrl(song.getSourceUrl());
+    if (not url.isValid() or url.isEmpty()) {
+        return false;
+    }
+
+    player_->stop();
+    player_->setSource(url);
+    return true;
+}
+
+bool MusicPlayer::Player::play()
+{
+    player_->play();
+    return true;
+}
+
+bool MusicPlayer::Player::stop()
+{
+    player_->stop();
+    return true;
+}
+
+bool MusicPlayer::Player::pause()
+{
+    player_->pause();
+    return true;
+}

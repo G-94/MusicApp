@@ -39,13 +39,14 @@ public:
         QString duration
     ) noexcept;
 
-    QString& getTitle() noexcept;
-    QString& getAuthor() noexcept;
-    QString& getTextDuration() noexcept;
+    QString getTitle() const noexcept;
+    QString getAuthor() const noexcept;
+    QString getTextDuration() const noexcept;
     unsigned short getDuration() const noexcept;
     QString getId() const noexcept;
-    QString& getSourceUrl() noexcept;
-    QString& getImgUrl() noexcept;
+    QString getSourceUrl() const noexcept;
+    QString getImgUrl() const noexcept;
+    QString getLocalPath() const noexcept;
     bool isPlayable() const noexcept;
 
     bool isLiked() const noexcept;
@@ -53,6 +54,7 @@ public:
 
     void setLikeStatus(bool state) noexcept;
     void setDownloadStatus(bool state) noexcept;
+    void setLocalPath(const QString& path);
 
     QJsonObject toJson() const override;
     static SongItem fromJson(const QJsonObject& obj);
@@ -71,6 +73,7 @@ private:
 // song source data
     QString source_img_url_;
     QString source_url_;
+    QString local_path_;
 
 // state of song
     bool is_playable_ = true;

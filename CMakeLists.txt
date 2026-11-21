@@ -24,6 +24,7 @@ qt_add_executable(MusicApp
     userdataloader.h
     userdataloader.cpp
     paths.h
+    player.h player.cpp
 )
 
 target_link_libraries(MusicApp
