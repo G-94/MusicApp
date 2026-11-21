@@ -33,6 +33,9 @@ public:
     bool stop();
     bool pause();
 
+    void setPosition(quint64 position);
+    QMediaPlayer::PlaybackState state() const;
+
 private:
 
     QMediaPlayer* player_;
@@ -42,8 +45,9 @@ signals:
 
     void error(QString message);
     void playbackStateChanged(QMediaPlayer::PlaybackState state);
-    void positionChanged(unsigned int position);
-    void durationChanged(unsigned int duration);
+    void positionChanged(qint64 position);
+    void durationChanged(qint64 duration);
+    void songFinished();
 
 };
 
