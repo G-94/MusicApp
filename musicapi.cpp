@@ -370,8 +370,7 @@ void Api::MusicApi::parseSongsFromPage(const QList<QStringView> &songs_blocks,
         try {
             data = Helper::parseJsonStr(QString(song_data_text));
         } catch (const QException& e) {
-            e.raise();
-            return;
+            continue;
         }
 
         // add song to accumulator

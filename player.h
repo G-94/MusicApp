@@ -2,7 +2,8 @@
 
 -------------------------------------------------------------------------
 
-
+    Player class is used to play songs, stream songs, stream radio;
+        inside uses bypass to pass through some defensers
 
 -------------------------------------------------------------------------
 
@@ -17,6 +18,7 @@
 #include <QString>
 
 #include "songitem.h"
+#include "networkbypass.h"
 
 namespace MusicPlayer {
 
@@ -40,6 +42,7 @@ private:
 
     QMediaPlayer* player_;
     QAudioOutput* output_;
+    Api::NetworkBypass* bypass_;
 
 signals:
 
@@ -48,7 +51,7 @@ signals:
     void positionChanged(qint64 position);
     void durationChanged(qint64 duration);
     void songFinished();
-
+    void songLoaded();
 };
 
 }

@@ -1,9 +1,10 @@
 #include "player.h"
 
-MusicPlayer::Player::Player() : player_(nullptr), output_(nullptr)
+MusicPlayer::Player::Player() : player_(nullptr), output_(nullptr), bypass_(nullptr)
 {
     player_ = new QMediaPlayer(this);
     output_ = new QAudioOutput(this);
+    bypass_ = new Api::NetworkBypass(this);
 
     player_->setAudioOutput(output_);
     output_->setVolume(1.0);
@@ -20,6 +21,16 @@ MusicPlayer::Player::Player() : player_(nullptr), output_(nullptr)
     QObject::connect(player_, &QMediaPlayer::mediaStatusChanged, this, [this] (auto status) {
         if (status == QMediaPlayer::EndOfMedia)
             emit songFinished();
+    });
+
+    QObject::connect(bypass_, &Api::NetworkBypass::mirrorFind, [this](QUrl result) {
+        player_->stop();
+        player_->setSource(result);
+        emit songLoaded();
+    });
+
+    QObject::connect(bypass_, &Api::NetworkBypass::error, [this](QString msg) {
+        qDebug() << msg;
     });
 }
 
@@ -41,8 +52,8 @@ bool MusicPlayer::Player::setSong(const Song::SongItem &song)
         return false;
     }
 
-    player_->stop();
-    player_->setSource(url);
+    bypass_->getMirrorUrl(url);
+
     return true;
 }
 

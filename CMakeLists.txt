@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(MusicApp LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network Test)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network Test Multimedia)
 
 qt_standard_project_setup()
 
@@ -25,6 +25,7 @@ qt_add_executable(MusicApp
     userdataloader.cpp
     paths.h
     player.h player.cpp
+    networkbypass.h networkbypass.cpp
 )
 
 target_link_libraries(MusicApp
@@ -32,6 +33,7 @@ target_link_libraries(MusicApp
         Qt6::Core
         Qt6::Widgets
         Qt6::Network
+        Qt6::Multimedia
 )
 
 # --- Тесты (отдельная цель) ---

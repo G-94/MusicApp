@@ -7,12 +7,6 @@ Song::SongItem::SongItem(
     source_img_url_(std::move(img_url)), id_(QStringView(id).mid(id.lastIndexOf("-") + 1)),
     text_duration_(duration), duration_(Helper::castTextDurationToInt(duration))
 {
-    if (not isSuccess) {
-        qDebug() << "Error while cast id to string";
-        is_playable_ = false;
-        return;
-    }
-
     qDebug() << "Create song item with id: " << id_ << "\n";
 }
 
