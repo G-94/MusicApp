@@ -227,13 +227,13 @@ void Api::MusicApi::parseCollectionsFromPage(const QStringView page, Collections
 // get radios from pages/page
 void Api::MusicApi::fetchRadiosPages(QUrl url, RadiosVectorPtr accumulator, int page, bool onlyOne)
 {
+    url = QUrl(url.toString().replace(HTTP_Literals::EMPTY_PAGE_STR, QString::number(page)));
+
     QNetworkRequest request(url);
     QNetworkReply* reply = manager_->get(request);
 
     QObject::connect(reply, &QNetworkReply::finished, [this, reply, url, accumulator, page, onlyOne]() mutable {
         reply->deleteLater();
-
-        url = QUrl(url.toString().replace(HTTP_Literals::EMPTY_PAGE_STR, QString::number(page)));
 
         if(reply->error() != QNetworkReply::NoError) {
             emit loadingRadiosFailed(Codes_Literals::REPLY_ERROR);

@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
         for (auto& el : *res) {
             qDebug() << el.getTitle() << el.getId() << el.getSourceImgUrl() << el.getSourceUrl() << "\n";
         }
-        p->setRadioStream(res->at(1));
+        p->setRadioStream(res->at(5));
         p->play();
     });
 
