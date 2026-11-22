@@ -46,6 +46,8 @@ private:
     QVector<Album::AlbumItem> familiar_albums_;
     QVector<Collection::CollectionItem> familiar_collections_;
 
+    QVector<Radio::RadioItem> radio_stations_list_;;
+
 private:
 
     bool loadRadios();
@@ -54,6 +56,10 @@ private:
     bool loadFamiliarArtists();
     bool loadFamiliarAlbums();
     bool loadFamiliarCollections();
+
+private:
+
+    // TODO: make a cache rules for songs
 
 signals:
 
