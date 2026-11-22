@@ -16,14 +16,14 @@ int main(int argc, char *argv[])
         p->play();
     });
 
-    m.getSongsArtistsAlbumsByQuery("Flash", true);
+    // m.getSongsArtistsAlbumsByQuery("Flash", true);
 
-    QObject::connect(&m, &Api::MusicApi::songsByQueryLoaded, [p] (std::shared_ptr<QVector<Song::SongItem>> res) {
-        for (auto& el : *res) {
-            qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
-        }
-        p->setSong(res->at(0));
-    });
+    // QObject::connect(&m, &Api::MusicApi::songsByQueryLoaded, [p] (std::shared_ptr<QVector<Song::SongItem>> res) {
+    //     for (auto& el : *res) {
+    //         qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
+    //     }
+    //     p->setSong(res->at(0));
+    // });
 
     // QObject::connect(&m, &Api::MusicApi::artistsListLoaded, [] (std::shared_ptr<QVector<Artists::ArtistItem>> res) {
     //     for (auto& el : *res) {
@@ -73,13 +73,15 @@ int main(int argc, char *argv[])
     //     p->setSong(res->at(0));
     // });
 
-    // m.getRadios();
+    m.getRadios();
 
-    // QObject::connect(&m, &Api::MusicApi::radiosListLoaded, [] (std::shared_ptr<QVector<Radio::RadioItem>> res) {
-    //     for (auto& el : *res) {
-    //         qDebug() << el.getName() << el.getId() << el.getSourceImgUrl() << el.getSourceUrl() << "\n";
-    //     }
-    // });
+    QObject::connect(&m, &Api::MusicApi::radiosListLoaded, [p] (std::shared_ptr<QVector<Radio::RadioItem>> res) {
+        for (auto& el : *res) {
+            qDebug() << el.getTitle() << el.getId() << el.getSourceImgUrl() << el.getSourceUrl() << "\n";
+        }
+        p->setRadioStream(res->at(1));
+        p->play();
+    });
 
     // m.getCollections(2);
 

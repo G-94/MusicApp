@@ -17,10 +17,19 @@
 #include <QObject>
 #include <QString>
 
+// side lib to connect radios url
+#include "bass.h"
+
 #include "songitem.h"
+#include "radioitem.h"
 #include "networkbypass.h"
 
 namespace MusicPlayer {
+
+enum STREAM_TYPE {
+    SONG,
+    RADIO
+};
 
 class Player : public QObject
 {
@@ -29,8 +38,17 @@ class Player : public QObject
 public:
 
     explicit Player();
+    ~Player() override;
+
+    Player(const MusicPlayer::Player&) = delete;
+    Player& operator = (const MusicPlayer::Player&) = delete;
+
+    Player(MusicPlayer::Player&&) = delete;
+    Player& operator = (MusicPlayer::Player&&) = delete;
 
     bool setSong(const Song::SongItem& song);
+    bool setRadioStream(const Radio::RadioItem& radio);
+
     bool play();
     bool stop();
     bool pause();
@@ -43,6 +61,16 @@ private:
     QMediaPlayer* player_;
     QAudioOutput* output_;
     Api::NetworkBypass* bypass_;
+
+    STREAM_TYPE stream_type_ = SONG;
+
+    // side bass.dll lib
+    HSTREAM radio_stream_ = 0;
+    bool bass_initialized_ = false;
+
+private:
+
+    bool bassInit();
 
 signals:
 
