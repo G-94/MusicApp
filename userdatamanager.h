@@ -40,6 +40,7 @@ public:
     void preloadUserData();
 
     void saveLikedDownlaodedSongs();
+    void saveFamiliarSongs();
 
     void addLikedSong(const Song::SongItem& song);
     void addDownloadedSong(const Song::SongItem& song);

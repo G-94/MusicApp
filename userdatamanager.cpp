@@ -38,7 +38,7 @@ void User_Data::UserDataManager::saveLikedDownlaodedSongs()
             }
         }
 
-        return loader_.SaveMusicItems(path, merged);
+        return loader_.saveMusicItems(path, merged);
     });
 
     auto* watcher = new QFutureWatcher<bool>(this);
@@ -47,13 +47,35 @@ void User_Data::UserDataManager::saveLikedDownlaodedSongs()
         bool result = watcher->result();
 
         if (result) {
-            emit touchedSongsSaved();
+            emit likedDownloadedSongsSaved();
         } else {
-            emit error("Error while saving touchedSongs");
+            emit error("Error while saving likedDownloadedSongs");
         }
     });
 
     watcher->setFuture(future);
+}
+
+void User_Data::UserDataManager::saveFamiliarSongs()
+{
+    QString path = Paths::familiarSongsPath();
+    const QVector<Song::SongItem> familiar_tracklist_copy = this->familiar_tracklist_;
+
+    auto future = QtConcurrent::run([this, path, familiar_tracklist_copy]() -> bool {
+        return loader_.saveMusicItems(path, familiar_tracklist_copy);
+    });
+
+    auto* watcher = new QFutureWatcher<bool>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        bool result = watcher->result();
+
+        if (result) {
+            emit familiarSongsSaved();
+        } else {
+            emit error("Error while saving familiarSongs");
+        }
+    });
 }
 
 void User_Data::UserDataManager::addLikedSong(const Song::SongItem &song)
@@ -70,7 +92,7 @@ void User_Data::UserDataManager::loadLikedDownloadedSongs()
 {
     QString path = Paths::LikedAndDownloadsSongsPath();
     auto future = QtConcurrent::run([this, path]() -> QVector<Song::SongItem> {
-        return loader_.LoadMusicItems<Song::SongItem>(path);
+        return loader_.loadMusicItems<Song::SongItem>(path);
     });
 
     auto* watcher = new QFutureWatcher<QVector<Song::SongItem>>(this);
@@ -100,7 +122,25 @@ void User_Data::UserDataManager::loadLikedDownloadedSongs()
             }
         }
 
-        emit touchedSongsLoaded();
+        emit likedDownloadedSongsLoaded();
+    });
+
+    watcher->setFuture(future);
+}
+
+void User_Data::UserDataManager::loadFamiliarSongs()
+{
+    QString path = Paths::familiarSongsPath();
+    auto future = QtConcurrent::run([this, path]() -> QVector<Song::SongItem> {
+        return loader_.loadMusicItems<Song::SongItem>(path);
+    });
+
+    auto* watcher = new QFutureWatcher<QVector<Song::SongItem>>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        this->familiar_tracklist_ = watcher->result();
+
+        emit familiarSongsLoaded();
     });
 
     watcher->setFuture(future);

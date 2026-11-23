@@ -40,7 +40,7 @@ private:
 public:
 
     template <typename Item>
-    QVector<Item> LoadMusicItems(const QString& path) {
+    QVector<Item> loadMusicItems(const QString& path) {
         static_assert(std::is_base_of<MusicItem::MusicItem, Item>::value,
                       "only MusicItems sub-classes are allowed");
 
@@ -59,7 +59,7 @@ public:
     }
 
     template <typename Item>
-    bool SaveMusicItems(const QString& path, const QVector<Item>& data) {
+    bool saveMusicItems(const QString& path, const QVector<Item>& data) {
         static_assert(std::is_base_of<MusicItem::MusicItem, Item>::value,
                       "only MusicItems sub-classes are allowed");
 
