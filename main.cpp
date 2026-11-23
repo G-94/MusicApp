@@ -3,27 +3,30 @@
 #include "musicapi.h"
 #include "paths.h"
 #include "player.h"
-#include "userdataloader.h"
+#include "userdatamanager.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
     Api::MusicApi m;
+    User_Data::UserDataManager* manager = new User_Data::UserDataManager();
     MusicPlayer::Player* p = new MusicPlayer::Player();
 
     QObject::connect(p, &MusicPlayer::Player::songLoaded, [p]() {
         p->play();
     });
 
-    // m.getSongsArtistsAlbumsByQuery("Flash", true);
+    m.getSongsArtistsAlbumsByQuery("Flash", true);
 
-    // QObject::connect(&m, &Api::MusicApi::songsByQueryLoaded, [p] (std::shared_ptr<QVector<Song::SongItem>> res) {
-    //     for (auto& el : *res) {
-    //         qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
-    //     }
-    //     p->setSong(res->at(0));
-    // });
+    QObject::connect(&m, &Api::MusicApi::songsByQueryLoaded, [p, manager] (std::shared_ptr<QVector<Song::SongItem>> res) {
+        for (auto& el : *res) {
+            qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
+            manager->addLikedSong(el);
+        }
+        manager->saveTouchedSongs();
+        p->setSong(res->at(0));
+    });
 
     // QObject::connect(&m, &Api::MusicApi::artistsListLoaded, [] (std::shared_ptr<QVector<Artists::ArtistItem>> res) {
     //     for (auto& el : *res) {
@@ -73,15 +76,15 @@ int main(int argc, char *argv[])
     //     p->setSong(res->at(0));
     // });
 
-    m.getRadios();
+    // m.getRadios();
 
-    QObject::connect(&m, &Api::MusicApi::radiosListLoaded, [p] (std::shared_ptr<QVector<Radio::RadioItem>> res) {
-        for (auto& el : *res) {
-            qDebug() << el.getTitle() << el.getId() << el.getSourceImgUrl() << el.getSourceUrl() << "\n";
-        }
-        p->setRadioStream(res->at(5));
-        p->play();
-    });
+    // QObject::connect(&m, &Api::MusicApi::radiosListLoaded, [p] (std::shared_ptr<QVector<Radio::RadioItem>> res) {
+    //     for (auto& el : *res) {
+    //         qDebug() << el.getTitle() << el.getId() << el.getSourceImgUrl() << el.getSourceUrl() << "\n";
+    //     }
+    //     p->setRadioStream(res->at(5));
+    //     p->play();
+    // });
 
     // m.getCollections(2);
 

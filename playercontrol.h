@@ -31,7 +31,7 @@ private:
     MusicPlayer::Player* player_;
 
     std::shared_ptr<QVector<Song::SongItem>> current_tracklist_;
-    Song::SongItem current_song_;
+    // Song::SongItem current_song_;
 
 signals:
 

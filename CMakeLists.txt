@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.19)
 project(MusicApp LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network Test Multimedia)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network Multimedia)
 
 qt_standard_project_setup()
 
-# --- Основное приложение (сначала создаём цель) ---
+# --- Основное приложение ---
 qt_add_executable(MusicApp
     WIN32 MACOSX_BUNDLE
     main.cpp
@@ -31,8 +31,6 @@ qt_add_executable(MusicApp
 )
 
 # --- BASS: линкуемся прямо на 64-битную DLL ---
-# Важно: в libs/bass должен лежать bass.dll из папки x64 архива bass24.zip.
-# Старые libbass.a и bass.def удалите, чтобы сборка их случайно не подхватила.
 set(BASS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/bass")
 target_include_directories(MusicApp PRIVATE ${BASS_DIR})
 target_link_libraries(MusicApp PRIVATE ${BASS_DIR}/bass.dll)
@@ -47,8 +45,6 @@ target_link_libraries(MusicApp
 )
 
 # --- Копирование DLL BASS в папку сборки ---
-# bass_aac.dll — это плагин: BASS сам подгружает его во время работы,
-# линковаться на него не нужно, достаточно, чтобы он лежал рядом с exe.
 add_custom_command(TARGET MusicApp POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${BASS_DIR}/bass.dll"
@@ -58,37 +54,6 @@ add_custom_command(TARGET MusicApp POST_BUILD
         "$<TARGET_FILE_DIR:MusicApp>/bass_aac.dll"
     COMMENT "Copying BASS DLLs to output directory"
 )
-
-# --- Тесты (отдельная цель) ---
-enable_testing()
-
-qt_add_executable(MusicAppTests
-    main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    musicapi.h musicapi.cpp
-    songitem.h songitem.cpp
-    config.h
-    helperfunctions.h helperfunctions.cpp
-    appexceptions.h appexceptions.cpp
-    artistitem.h artistitem.cpp
-    radioitem.h radioitem.cpp
-    albumitem.h albumitem.cpp
-    collectionitem.h collectionitem.cpp
-    musicitem.h musicitem.cpp
-    userdataloader.h
-    userdataloader.cpp
-    paths.h
-)
-
-target_link_libraries(MusicAppTests
-    PRIVATE
-        Qt6::Core
-        Qt6::Network
-        Qt6::Test
-)
-
-add_test(NAME MusicAppTests COMMAND MusicAppTests)
 
 # --- Установка (только приложение) ---
 install(TARGETS MusicApp

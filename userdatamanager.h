@@ -33,12 +33,16 @@ class UserDataManager : public QObject
 
     Q_OBJECT
 public:
-    UserDataManager(std::shared_ptr<Api::MusicApi> api);
+    UserDataManager();
+    // UserDataManager(std::shared_ptr<Api::MusicApi> api);
 
     //async func that loads user data
     void preloadUserData();
 
     void saveTouchedSongs();
+
+    void addLikedSong(const Song::SongItem& song);
+    void addDownloadedSong(const Song::SongItem& song);
 
 private:
 
@@ -57,7 +61,7 @@ private:
 
 private:
 
-    void loadRadios();
+    // void loadRadios();
     void loadTouchedSongs();
     void loadFamiliarSongs();
     void loadFamiliarArtists();
@@ -70,8 +74,8 @@ private:
 
 signals:
 
-    void radiosLoaded();
-    void radiosSaved();
+    // void radiosLoaded();
+    // void radiosSaved();
 
     void touchedSongsLoaded();
     void touchedSongsSaved();

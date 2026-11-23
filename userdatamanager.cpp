@@ -1,6 +1,6 @@
 #include "userdatamanager.h"
 
-User_Data::UserDataManager::UserDataManager(std::shared_ptr<Api::MusicApi> api)
+User_Data::UserDataManager::UserDataManager()
 {
 
 }
@@ -54,6 +54,16 @@ void User_Data::UserDataManager::saveTouchedSongs()
     });
 
     watcher->setFuture(future);
+}
+
+void User_Data::UserDataManager::addLikedSong(const Song::SongItem &song)
+{
+    this->liked_tracklist_.append(song);
+}
+
+void User_Data::UserDataManager::addDownloadedSong(const Song::SongItem &song)
+{
+    this->downloaded_tracklist_.append(song);
 }
 
 void User_Data::UserDataManager::loadTouchedSongs()
