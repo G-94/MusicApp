@@ -58,7 +58,7 @@ void User_Data::UserDataManager::saveLikedDownlaodedSongs()
 
 void User_Data::UserDataManager::saveFamiliarSongs()
 {
-    QString path = Paths::familiarSongsPath();
+    QString path = Paths::familiarArtistsPath();
     const QVector<Song::SongItem> familiar_tracklist_copy = this->familiar_tracklist_;
 
     auto future = QtConcurrent::run([this, path, familiar_tracklist_copy]() -> bool {
@@ -78,14 +78,26 @@ void User_Data::UserDataManager::saveFamiliarSongs()
     });
 }
 
-void User_Data::UserDataManager::addLikedSong(const Song::SongItem &song)
+void User_Data::UserDataManager::saveFamiliarArtists()
 {
-    this->liked_tracklist_.append(song);
-}
+    QString path = Paths::familiarSongsPath();
+    const QVector<Artists::ArtistItem> familiar_artists_copy = this->familiar_artists_;
 
-void User_Data::UserDataManager::addDownloadedSong(const Song::SongItem &song)
-{
-    this->downloaded_tracklist_.append(song);
+    auto future = QtConcurrent::run([this, path, familiar_artists_copy]() -> bool {
+        return loader_.saveMusicItems(path, familiar_artists_copy);
+    });
+
+    auto* watcher = new QFutureWatcher<bool>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        bool result = watcher->result();
+
+        if (result) {
+            emit familiarArtistsSaved();
+        } else {
+            emit error("Error while saving familiarArtists");
+        }
+    });
 }
 
 void User_Data::UserDataManager::loadLikedDownloadedSongs()
@@ -144,4 +156,37 @@ void User_Data::UserDataManager::loadFamiliarSongs()
     });
 
     watcher->setFuture(future);
+}
+
+void User_Data::UserDataManager::loadFamiliarArtists()
+{
+    QString path = Paths::familiarArtistsPath();
+    auto future = QtConcurrent::run([this, path]() -> QVector<Artists::ArtistItem> {
+        return loader_.loadMusicItems<Artists::ArtistItem>(path);
+    });
+
+    auto* watcher = new QFutureWatcher<QVector<Artists::ArtistItem>>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        this->familiar_artists_ = watcher->result();
+
+        emit familiarArtistsLoaded();
+    });
+
+    watcher->setFuture(future);
+}
+
+void User_Data::UserDataManager::addLikedSong(const Song::SongItem &song)
+{
+    this->liked_tracklist_.append(song);
+}
+
+void User_Data::UserDataManager::addDownloadedSong(const Song::SongItem &song)
+{
+    this->downloaded_tracklist_.append(song);
+}
+
+void User_Data::UserDataManager::addFamiliarSong(const Song::SongItem &song)
+{
+    this->familiar_tracklist_.append(song);
 }

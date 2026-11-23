@@ -41,9 +41,7 @@ public:
 
     void saveLikedDownlaodedSongs();
     void saveFamiliarSongs();
-
-    void addLikedSong(const Song::SongItem& song);
-    void addDownloadedSong(const Song::SongItem& song);
+    void saveFamiliarArtists();
 
 private:
 
@@ -72,6 +70,14 @@ private:
 private:
 
     // TODO: make a cache rules for songs
+
+public:
+
+    // adders
+
+    void addLikedSong(const Song::SongItem& song);
+    void addDownloadedSong(const Song::SongItem& song);
+    void addFamiliarSong(const Song::SongItem& song);
 
 signals:
 
