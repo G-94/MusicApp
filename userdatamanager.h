@@ -12,7 +12,10 @@
 #define USERDATAMANAGER_H
 
 #include <QString>
+#include <QObject>
 #include <QVector>
+#include <QFutureWatcher>
+#include <QtConcurrent/QtConcurrentRun>
 
 #include "musicapi.h"
 #include "songitem.h"
@@ -25,13 +28,17 @@
 
 namespace User_Data {
 
-class UserDataManager
+class UserDataManager : public QObject
 {
+
+    Q_OBJECT
 public:
     UserDataManager(std::shared_ptr<Api::MusicApi> api);
 
     //async func that loads user data
-    bool preloadUserData();
+    void preloadUserData();
+
+    void saveTouchedSongs();
 
 private:
 
@@ -46,22 +53,40 @@ private:
     QVector<Album::AlbumItem> familiar_albums_;
     QVector<Collection::CollectionItem> familiar_collections_;
 
-    QVector<Radio::RadioItem> radio_stations_list_;;
+    QVector<Radio::RadioItem> radio_stations_list_;
 
 private:
 
-    bool loadRadios();
-    bool loadTouchedSongs();
-    bool loadFamiliarSongs();
-    bool loadFamiliarArtists();
-    bool loadFamiliarAlbums();
-    bool loadFamiliarCollections();
+    void loadRadios();
+    void loadTouchedSongs();
+    void loadFamiliarSongs();
+    void loadFamiliarArtists();
+    void loadFamiliarAlbums();
+    void loadFamiliarCollections();
 
 private:
 
     // TODO: make a cache rules for songs
 
 signals:
+
+    void radiosLoaded();
+    void radiosSaved();
+
+    void touchedSongsLoaded();
+    void touchedSongsSaved();
+
+    void familiarSongsLoaded();
+    void familiarSongsSaved();
+
+    void familiarArtistsLoaded();
+    void familiarArtistsSaved();
+
+    void familiarAlbumsLoaded();
+    void familiarAlbumsSaved();
+
+    void familiarCollectionsLoaded();
+    void familiarCollectionsSaved();
 
 };
 

@@ -36,7 +36,7 @@ bool User_Data::UserDataLoader::save(const QString &path, const QJsonObject& dat
     }
 
     const QJsonDocument doc(data);
-    const QByteArray json_data = doc.toJson(QJsonDocument::Indented);
+    const QByteArray json_data = doc.toJson(QJsonDocument::Compact);
 
     if (file.write(json_data) != json_data.size()) {
         qDebug() << "error saving on writing file" << file.errorString();
