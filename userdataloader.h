@@ -40,21 +40,22 @@ private:
 public:
 
     template <typename Item>
-    bool LoadMusicItems(const QString& path, QVector<Item>& data) {
+    QVector<Item> LoadMusicItems(const QString& path) {
         static_assert(std::is_base_of<MusicItem::MusicItem, Item>::value,
                       "only MusicItems sub-classes are allowed");
 
         const QJsonObject obj = load(path);
         const QJsonArray items_array = obj.value("items").toArray();
 
-        data.clear();
+        QVector<Item> data;
         data.reserve(items_array.size());
+
         for (const auto& item : items_array) {
             if(item.isObject())
                 data.append(Item::fromJson(item.toObject()));
         }
 
-        return true;
+        return data;
     }
 
     template <typename Item>
