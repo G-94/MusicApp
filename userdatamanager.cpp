@@ -10,7 +10,7 @@ void User_Data::UserDataManager::preloadUserData()
 
 }
 
-void User_Data::UserDataManager::saveTouchedSongs()
+void User_Data::UserDataManager::saveLikedDownlaodedSongs()
 {
     QString path = Paths::LikedAndDownloadsSongsPath();
 
@@ -66,7 +66,7 @@ void User_Data::UserDataManager::addDownloadedSong(const Song::SongItem &song)
     this->downloaded_tracklist_.append(song);
 }
 
-void User_Data::UserDataManager::loadTouchedSongs()
+void User_Data::UserDataManager::loadLikedDownloadedSongs()
 {
     QString path = Paths::LikedAndDownloadsSongsPath();
     auto future = QtConcurrent::run([this, path]() -> QVector<Song::SongItem> {

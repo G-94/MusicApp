@@ -39,7 +39,7 @@ public:
     //async func that loads user data
     void preloadUserData();
 
-    void saveTouchedSongs();
+    void saveLikedDownlaodedSongs();
 
     void addLikedSong(const Song::SongItem& song);
     void addDownloadedSong(const Song::SongItem& song);
@@ -62,7 +62,7 @@ private:
 private:
 
     // void loadRadios();
-    void loadTouchedSongs();
+    void loadLikedDownloadedSongs();
     void loadFamiliarSongs();
     void loadFamiliarArtists();
     void loadFamiliarAlbums();
@@ -77,8 +77,8 @@ signals:
     // void radiosLoaded();
     // void radiosSaved();
 
-    void touchedSongsLoaded();
-    void touchedSongsSaved();
+    void likedDownloadedSongsLoaded();
+    void likedDownloadedSongsSaved();
 
     void familiarSongsLoaded();
     void familiarSongsSaved();

@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
             qDebug() << el.getAuthor() << el.getTitle() << el.getDuration() << el.getId() << el.getSourceUrl() << "\n";
             manager->addLikedSong(el);
         }
-        manager->saveTouchedSongs();
+        manager->saveLikedDownlaodedSongs();
         p->setSong(res->at(0));
     });
 
