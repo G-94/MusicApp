@@ -88,6 +88,7 @@ signals:
     void familiarCollectionsLoaded();
     void familiarCollectionsSaved();
 
+    void error(QString msg);
 };
 
 }

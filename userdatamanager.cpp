@@ -12,7 +12,48 @@ void User_Data::UserDataManager::preloadUserData()
 
 void User_Data::UserDataManager::saveTouchedSongs()
 {
+    QString path = Paths::LikedAndDownloadsSongsPath();
 
+    const QVector<Song::SongItem> liked_copy = liked_tracklist_;
+    const QVector<Song::SongItem> downloaded_copy = downloaded_tracklist_;
+
+    auto future = QtConcurrent::run([this, path, liked_copy, downloaded_copy]() -> bool {
+        QSet<QString> unique_songs_ids;
+        QVector<Song::SongItem> merged;
+        merged.reserve(liked_copy.size() + downloaded_copy.size());
+
+        // add only unique songs
+
+        for (const Song::SongItem& song : liked_copy) {
+            if (not unique_songs_ids.contains(song.getId())) {
+                unique_songs_ids.insert(song.getId());
+                merged.append(song);
+            }
+        }
+
+        for (const Song::SongItem& song : downloaded_copy) {
+            if (not unique_songs_ids.contains(song.getId())) {
+                unique_songs_ids.insert(song.getId());
+                merged.append(song);
+            }
+        }
+
+        return loader_.SaveMusicItems(path, merged);
+    });
+
+    auto* watcher = new QFutureWatcher<bool>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        bool result = watcher->result();
+
+        if (result) {
+            emit touchedSongsSaved();
+        } else {
+            emit error("Error while saving touchedSongs");
+        }
+    });
+
+    watcher->setFuture(future);
 }
 
 void User_Data::UserDataManager::loadTouchedSongs()
