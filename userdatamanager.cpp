@@ -58,7 +58,7 @@ void User_Data::UserDataManager::saveLikedDownlaodedSongs()
 
 void User_Data::UserDataManager::saveFamiliarSongs()
 {
-    QString path = Paths::familiarArtistsPath();
+    QString path = Paths::familiarSongsPath();
     const QVector<Song::SongItem> familiar_tracklist_copy = this->familiar_tracklist_;
 
     auto future = QtConcurrent::run([this, path, familiar_tracklist_copy]() -> bool {
@@ -76,11 +76,13 @@ void User_Data::UserDataManager::saveFamiliarSongs()
             emit error("Error while saving familiarSongs");
         }
     });
+
+    watcher->setFuture(future);
 }
 
 void User_Data::UserDataManager::saveFamiliarArtists()
 {
-    QString path = Paths::familiarSongsPath();
+    QString path = Paths::familiarArtistsPath();
     const QVector<Artists::ArtistItem> familiar_artists_copy = this->familiar_artists_;
 
     auto future = QtConcurrent::run([this, path, familiar_artists_copy]() -> bool {
@@ -98,6 +100,32 @@ void User_Data::UserDataManager::saveFamiliarArtists()
             emit error("Error while saving familiarArtists");
         }
     });
+
+    watcher->setFuture(future);
+}
+
+void User_Data::UserDataManager::saveFamiliarAlbums()
+{
+    QString path = Paths::familiarAlbumsPath();
+    const QVector<Album::AlbumItem> familiar_albums_copy = this->familiar_albums_;
+
+    auto future = QtConcurrent::run([this, path, familiar_albums_copy]() -> bool {
+        return loader_.saveMusicItems(path, familiar_albums_copy);
+    });
+
+    auto* watcher = new QFutureWatcher<bool>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        bool result = watcher->result();
+
+        if (result) {
+            emit familiarAlbumsSaved();
+        } else {
+            emit error("Error while saving familiarAlbums");
+        }
+    });
+
+    watcher->setFuture(future);
 }
 
 void User_Data::UserDataManager::loadLikedDownloadedSongs()
@@ -176,6 +204,24 @@ void User_Data::UserDataManager::loadFamiliarArtists()
     watcher->setFuture(future);
 }
 
+void User_Data::UserDataManager::loadFamiliarAlbums()
+{
+    QString path = Paths::familiarAlbumsPath();
+    auto future = QtConcurrent::run([this, path]() -> QVector<Album::AlbumItem> {
+        return loader_.loadMusicItems<Album::AlbumItem>(path);
+    });
+
+    auto* watcher = new QFutureWatcher<QVector<Album::AlbumItem>>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        this->familiar_albums_ = watcher->result();
+
+        emit familiarAlbumsLoaded();
+    });
+
+    watcher->setFuture(future);
+}
+
 void User_Data::UserDataManager::addLikedSong(const Song::SongItem &song)
 {
     this->liked_tracklist_.append(song);
@@ -189,4 +235,14 @@ void User_Data::UserDataManager::addDownloadedSong(const Song::SongItem &song)
 void User_Data::UserDataManager::addFamiliarSong(const Song::SongItem &song)
 {
     this->familiar_tracklist_.append(song);
+}
+
+void User_Data::UserDataManager::addFamiliarArtist(const Artists::ArtistItem &artist)
+{
+    this->familiar_artists_.append(artist);
+}
+
+void User_Data::UserDataManager::addFamiliarAlbum(const Album::AlbumItem &album)
+{
+    this->familiar_albums_.append(album);
 }
