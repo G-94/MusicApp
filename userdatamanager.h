@@ -43,6 +43,7 @@ public:
     void saveFamiliarSongs();
     void saveFamiliarArtists();
     void saveFamiliarAlbums();
+    void saveFamiliarCollections();
 
 private:
 
@@ -80,6 +81,11 @@ public:
     void addFamiliarSong(const Song::SongItem& song);
     void addFamiliarArtist(const Artists::ArtistItem& artist);
     void addFamiliarAlbum(const Album::AlbumItem& album);
+    void addFamiliarCollection(const Collection::CollectionItem& collection);
+
+    // removers
+    void removeSongFromLiked(const Song::SongItem& song);
+    void removeSongFromDownloaded(const Song::SongItem& song);
 
 signals:
 

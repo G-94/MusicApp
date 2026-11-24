@@ -293,3 +293,17 @@ void User_Data::UserDataManager::addFamiliarCollection(const Collection::Collect
 {
     this->familiar_collections_.append(collection);
 }
+
+void User_Data::UserDataManager::removeSongFromLiked(const Song::SongItem &song)
+{
+    this->liked_tracklist_.removeIf([song] (const Song::SongItem& s) {
+        return s.getId() == song.getId();
+    });
+}
+
+void User_Data::UserDataManager::removeSongFromDownloaded(const Song::SongItem &song)
+{
+    this->downloaded_tracklist_.removeIf([song] (const Song::SongItem& s) {
+        return s.getId() == song.getId();
+    });
+}
