@@ -312,6 +312,7 @@ void User_Data::UserDataManager::loadRadiosOnline(std::shared_ptr<Api::MusicApi>
         [this](std::shared_ptr<QVector<Radio::RadioItem>> result) {
             if (result)
                 this->radio_stations_list_ = std::move(*result);
+            emit radiosOnlineLoaded();
     });
 
     api->getRadios();
