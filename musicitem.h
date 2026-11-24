@@ -20,6 +20,7 @@ class MusicItem
 {
 public:
     MusicItem() = default;
+    virtual ~MusicItem() {};
 
     int getPlayedCounter() const noexcept;
     void setPlayedCounter(int new_val) noexcept;

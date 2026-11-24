@@ -22,7 +22,7 @@
 
 namespace Artists {
 
-class ArtistItem : MusicItem::MusicItem
+class ArtistItem final : MusicItem::MusicItem
 {
 
 public:

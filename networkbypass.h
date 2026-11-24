@@ -25,7 +25,7 @@
 
 namespace Api {
 
-class NetworkBypass : public QObject
+class NetworkBypass final : public QObject
 {
     Q_OBJECT
 public:

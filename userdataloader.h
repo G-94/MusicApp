@@ -30,7 +30,7 @@
 
 namespace User_Data {
 
-class UserDataLoader
+class UserDataLoader final
 {
 private:
 

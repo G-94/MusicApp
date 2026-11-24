@@ -27,7 +27,7 @@
 
 namespace Song {
 
-class SongItem : MusicItem::MusicItem
+class SongItem final : MusicItem::MusicItem
 {
 public:
     explicit SongItem(

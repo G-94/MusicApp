@@ -48,7 +48,7 @@ enum EMIT_TYPE {
     COLLECTION
 };
 
-class MusicApi : public QObject
+class MusicApi final : public QObject
 {
     Q_OBJECT
 public:

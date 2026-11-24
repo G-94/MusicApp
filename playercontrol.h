@@ -20,7 +20,7 @@
 #include "radioitem.h"
 #include "player.h"
 
-class PlayerControl : public QObject
+class PlayerControl final : public QObject
 {
     Q_OBJECT
 public:

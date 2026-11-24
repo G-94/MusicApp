@@ -31,7 +31,7 @@ enum STREAM_TYPE {
     RADIO
 };
 
-class Player : public QObject
+class Player final : public QObject
 {
     Q_OBJECT
 

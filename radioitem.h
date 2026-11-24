@@ -24,7 +24,7 @@
 
 namespace Radio {
 
-class RadioItem : MusicItem::MusicItem
+class RadioItem final : MusicItem::MusicItem
 {
 public:
     explicit RadioItem(QString title, QString id, QString source_url, QString source_img_url);

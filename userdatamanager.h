@@ -28,7 +28,7 @@
 
 namespace User_Data {
 
-class UserDataManager : public QObject
+class UserDataManager final : public QObject
 {
 
     Q_OBJECT
@@ -42,6 +42,7 @@ public:
     void saveLikedDownlaodedSongs();
     void saveFamiliarSongs();
     void saveFamiliarArtists();
+    void saveFamiliarAlbums();
 
 private:
 
@@ -74,10 +75,11 @@ private:
 public:
 
     // adders
-
     void addLikedSong(const Song::SongItem& song);
     void addDownloadedSong(const Song::SongItem& song);
     void addFamiliarSong(const Song::SongItem& song);
+    void addFamiliarArtist(const Artists::ArtistItem& artist);
+    void addFamiliarAlbum(const Album::AlbumItem& album);
 
 signals:
 

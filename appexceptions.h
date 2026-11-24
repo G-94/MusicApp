@@ -17,7 +17,7 @@
 
 namespace AppExceptions {
 
-class ConnectionApiException : public QException {
+class ConnectionApiException final : public QException {
 public:
     explicit ConnectionApiException(QString url);
     const char* what() const noexcept override;
@@ -31,7 +31,7 @@ private:
     std::string message_;
 };
 
-class InvalidUrlException : public QException {
+class InvalidUrlException final : public QException {
 public:
     explicit InvalidUrlException(QString url);
     const char* what() const noexcept override;
@@ -45,7 +45,7 @@ private:
     std::string message_;
 };
 
-class ParseDataException : public QException {
+class ParseDataException final : public QException {
 public:
     explicit ParseDataException(QString msg);
     const char* what() const noexcept override;
