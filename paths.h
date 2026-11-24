@@ -26,7 +26,7 @@ inline QString familiarSongsPath()
     return dir + QStringLiteral("/familiar_songs.json");
 }
 
-inline QString LikedAndDownloadsSongsPath()
+inline QString likedAndDownloadsSongsPath()
 {
     const QString dir = QStandardPaths::writableLocation(
         QStandardPaths::AppDataLocation);

@@ -62,7 +62,7 @@ private:
 
 private:
 
-    // void loadRadios();
+    void loadFamiliarRadios();
     void loadLikedDownloadedSongs();
     void loadFamiliarSongs();
     void loadFamiliarArtists();
@@ -82,15 +82,16 @@ public:
     void addFamiliarArtist(const Artists::ArtistItem& artist);
     void addFamiliarAlbum(const Album::AlbumItem& album);
     void addFamiliarCollection(const Collection::CollectionItem& collection);
+    void addFamiliarRadio(const Radio::RadioItem& radio);
 
     // removers
-    void removeSongFromLiked(const Song::SongItem& song);
-    void removeSongFromDownloaded(const Song::SongItem& song);
+    bool removeSongFromLiked(const Song::SongItem& song);
+    bool removeSongFromDownloaded(const Song::SongItem& song);
 
 signals:
 
-    // void radiosLoaded();
-    // void radiosSaved();
+    void familiarRadiosLoaded();
+    void familiarRadiosSaved();
 
     void likedDownloadedSongsLoaded();
     void likedDownloadedSongsSaved();

@@ -12,7 +12,7 @@ void User_Data::UserDataManager::preloadUserData()
 
 void User_Data::UserDataManager::saveLikedDownlaodedSongs()
 {
-    QString path = Paths::LikedAndDownloadsSongsPath();
+    QString path = Paths::likedAndDownloadsSongsPath();
 
     const QVector<Song::SongItem> liked_copy = liked_tracklist_;
     const QVector<Song::SongItem> downloaded_copy = downloaded_tracklist_;
@@ -152,9 +152,14 @@ void User_Data::UserDataManager::saveFamiliarCollections()
     watcher->setFuture(future);
 }
 
+void User_Data::UserDataManager::loadFamiliarRadios()
+{
+
+}
+
 void User_Data::UserDataManager::loadLikedDownloadedSongs()
 {
-    QString path = Paths::LikedAndDownloadsSongsPath();
+    QString path = Paths::likedAndDownloadsSongsPath();
     auto future = QtConcurrent::run([this, path]() -> QVector<Song::SongItem> {
         return loader_.loadMusicItems<Song::SongItem>(path);
     });
@@ -294,16 +299,34 @@ void User_Data::UserDataManager::addFamiliarCollection(const Collection::Collect
     this->familiar_collections_.append(collection);
 }
 
-void User_Data::UserDataManager::removeSongFromLiked(const Song::SongItem &song)
+bool User_Data::UserDataManager::removeSongFromLiked(const Song::SongItem &song)
 {
-    this->liked_tracklist_.removeIf([song] (const Song::SongItem& s) {
-        return s.getId() == song.getId();
-    });
+    auto it = std::find_if(this->liked_tracklist_.begin(), this->liked_tracklist_.end(),
+            [&song] (const Song::SongItem& s) {
+                return s.getId() == song.getId();
+            });
+
+    if (it == this->liked_tracklist_.end()) {
+        return false;
+    }
+
+    std::swap(*it, this->liked_tracklist_.back());
+    this->liked_tracklist_.pop_back();
+    return true;
 }
 
-void User_Data::UserDataManager::removeSongFromDownloaded(const Song::SongItem &song)
+bool User_Data::UserDataManager::removeSongFromDownloaded(const Song::SongItem &song)
 {
-    this->downloaded_tracklist_.removeIf([song] (const Song::SongItem& s) {
-        return s.getId() == song.getId();
-    });
+    auto it = std::find_if(this->downloaded_tracklist_.begin(), this->downloaded_tracklist_.end(),
+            [&song] (const Song::SongItem& s) {
+                return s.getId() == song.getId();
+            });
+
+    if (it == this->downloaded_tracklist_.end()) {
+        return false;
+    }
+
+    std::swap(*it, this->downloaded_tracklist_.back());
+    this->downloaded_tracklist_.pop_back();
+    return true;
 }
