@@ -34,11 +34,13 @@ class UserDataManager final : public QObject
     Q_OBJECT
 public:
     UserDataManager();
-    // UserDataManager(std::shared_ptr<Api::MusicApi> api);
 
-    //async func that loads user data
+    //async func that loads all user data
     void preloadUserData();
 
+public:
+
+    // savers async
     void saveFamiliarRadios();
     void saveLikedDownlaodedSongs();
     void saveFamiliarSongs();
@@ -48,7 +50,21 @@ public:
 
 private:
 
-    std::shared_ptr<Api::MusicApi> api_;
+    // loaders async
+    void loadFamiliarRadios();
+    void loadLikedDownloadedSongs();
+    void loadFamiliarSongs();
+    void loadFamiliarArtists();
+    void loadFamiliarAlbums();
+    void loadFamiliarCollections();
+
+public:
+
+    // async load radios
+    void loadRadiosOnline(std::shared_ptr<Api::MusicApi> api);
+
+private:
+
     User_Data::UserDataLoader loader_;
 
     QVector<Song::SongItem> familiar_tracklist_;
@@ -61,15 +77,6 @@ private:
 
     QVector<Radio::RadioItem> familiar_radios_;
     QVector<Radio::RadioItem> radio_stations_list_;
-
-private:
-
-    void loadFamiliarRadios();
-    void loadLikedDownloadedSongs();
-    void loadFamiliarSongs();
-    void loadFamiliarArtists();
-    void loadFamiliarAlbums();
-    void loadFamiliarCollections();
 
 private:
 
@@ -109,6 +116,8 @@ signals:
 
     void familiarCollectionsLoaded();
     void familiarCollectionsSaved();
+
+    void radiosOnlineLoaded();
 
     void error(QString msg);
 };

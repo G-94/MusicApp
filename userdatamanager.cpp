@@ -306,6 +306,17 @@ void User_Data::UserDataManager::loadFamiliarCollections()
     watcher->setFuture(future);
 }
 
+void User_Data::UserDataManager::loadRadiosOnline(std::shared_ptr<Api::MusicApi> api)
+{
+    QObject::connect(api.get(), &Api::MusicApi::radiosListLoaded,
+        [this](std::shared_ptr<QVector<Radio::RadioItem>> result) {
+            if (result)
+                this->radio_stations_list_ = std::move(*result);
+    });
+
+    api->getRadios();
+}
+
 void User_Data::UserDataManager::addLikedSong(const Song::SongItem &song)
 {
     this->liked_tracklist_.append(song);
