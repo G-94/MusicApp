@@ -128,6 +128,30 @@ void User_Data::UserDataManager::saveFamiliarAlbums()
     watcher->setFuture(future);
 }
 
+void User_Data::UserDataManager::saveFamiliarCollections()
+{
+    QString path = Paths::familiarCollectionsPath();
+    const QVector<Collection::CollectionItem> familiar_collections_copy = this->familiar_collections_;
+
+    auto future = QtConcurrent::run([this, path, familiar_collections_copy]() -> bool {
+        return loader_.saveMusicItems(path, familiar_collections_copy);
+    });
+
+    auto* watcher = new QFutureWatcher<bool>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        bool result = watcher->result();
+
+        if (result) {
+            emit familiarCollectionsSaved();
+        } else {
+            emit error("Error while saving familiarCollections");
+        }
+    });
+
+    watcher->setFuture(future);
+}
+
 void User_Data::UserDataManager::loadLikedDownloadedSongs()
 {
     QString path = Paths::LikedAndDownloadsSongsPath();
@@ -222,6 +246,24 @@ void User_Data::UserDataManager::loadFamiliarAlbums()
     watcher->setFuture(future);
 }
 
+void User_Data::UserDataManager::loadFamiliarCollections()
+{
+    QString path = Paths::familiarCollectionsPath();
+    auto future = QtConcurrent::run([this, path]() -> QVector<Collection::CollectionItem> {
+        return loader_.loadMusicItems<Collection::CollectionItem>(path);
+    });
+
+    auto* watcher = new QFutureWatcher<QVector<Collection::CollectionItem>>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        this->familiar_collections_ = watcher->result();
+
+        emit familiarCollectionsLoaded();
+    });
+
+    watcher->setFuture(future);
+}
+
 void User_Data::UserDataManager::addLikedSong(const Song::SongItem &song)
 {
     this->liked_tracklist_.append(song);
@@ -245,4 +287,9 @@ void User_Data::UserDataManager::addFamiliarArtist(const Artists::ArtistItem &ar
 void User_Data::UserDataManager::addFamiliarAlbum(const Album::AlbumItem &album)
 {
     this->familiar_albums_.append(album);
+}
+
+void User_Data::UserDataManager::addFamiliarCollection(const Collection::CollectionItem &collection)
+{
+    this->familiar_collections_.append(collection);
 }
