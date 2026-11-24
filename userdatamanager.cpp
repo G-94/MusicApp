@@ -10,6 +10,30 @@ void User_Data::UserDataManager::preloadUserData()
 
 }
 
+void User_Data::UserDataManager::saveFamiliarRadios()
+{
+    QString path = Paths::familiarRadiosPath();
+    const QVector<Radio::RadioItem> familiar_radios_copy = this->familiar_radios_;
+
+    auto future = QtConcurrent::run([this, path, familiar_radios_copy]() -> bool {
+        return loader_.saveMusicItems(path, familiar_radios_copy);
+    });
+
+    auto* watcher = new QFutureWatcher<bool>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        bool result = watcher->result();
+
+        if (result) {
+            emit familiarRadiosSaved();
+        } else {
+            emit error("Error while saving familiarRadios");
+        }
+    });
+
+    watcher->setFuture(future);
+}
+
 void User_Data::UserDataManager::saveLikedDownlaodedSongs()
 {
     QString path = Paths::likedAndDownloadsSongsPath();
@@ -154,7 +178,20 @@ void User_Data::UserDataManager::saveFamiliarCollections()
 
 void User_Data::UserDataManager::loadFamiliarRadios()
 {
+    QString path = Paths::familiarRadiosPath();
+    auto future = QtConcurrent::run([this, path]() -> QVector<Radio::RadioItem> {
+        return loader_.loadMusicItems<Radio::RadioItem>(path);
+    });
 
+    auto* watcher = new QFutureWatcher<QVector<Radio::RadioItem>>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        this->familiar_radios_ = watcher->result();
+
+        emit familiarRadiosLoaded();
+    });
+
+    watcher->setFuture(future);
 }
 
 void User_Data::UserDataManager::loadLikedDownloadedSongs()
@@ -297,6 +334,11 @@ void User_Data::UserDataManager::addFamiliarAlbum(const Album::AlbumItem &album)
 void User_Data::UserDataManager::addFamiliarCollection(const Collection::CollectionItem &collection)
 {
     this->familiar_collections_.append(collection);
+}
+
+void User_Data::UserDataManager::addFamiliarRadio(const Radio::RadioItem &radio)
+{
+    this->familiar_radios_.append(radio);
 }
 
 bool User_Data::UserDataManager::removeSongFromLiked(const Song::SongItem &song)

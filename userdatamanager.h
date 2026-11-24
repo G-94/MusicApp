@@ -39,6 +39,7 @@ public:
     //async func that loads user data
     void preloadUserData();
 
+    void saveFamiliarRadios();
     void saveLikedDownlaodedSongs();
     void saveFamiliarSongs();
     void saveFamiliarArtists();
@@ -58,6 +59,7 @@ private:
     QVector<Album::AlbumItem> familiar_albums_;
     QVector<Collection::CollectionItem> familiar_collections_;
 
+    QVector<Radio::RadioItem> familiar_radios_;
     QVector<Radio::RadioItem> radio_stations_list_;
 
 private:
