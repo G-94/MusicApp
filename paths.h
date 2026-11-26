@@ -66,6 +66,14 @@ inline QString familiarRadiosPath()
     return dir + QStringLiteral("/familiar_radios.json");
 }
 
+inline QString genresPath()
+{
+    const QString dir = QStandardPaths::writableLocation(
+        QStandardPaths::AppDataLocation);
+    QDir().mkpath(dir);
+    return dir + QStringLiteral("/genres.json");
+}
+
 }
 
 #endif // PATHS_H

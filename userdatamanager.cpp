@@ -1,9 +1,7 @@
 #include "userdatamanager.h"
 
 User_Data::UserDataManager::UserDataManager()
-{
-
-}
+{}
 
 void User_Data::UserDataManager::preloadUserData(std::shared_ptr<Api::MusicApi> music_api)
 {
@@ -14,6 +12,7 @@ void User_Data::UserDataManager::preloadUserData(std::shared_ptr<Api::MusicApi> 
     loadFamiliarCollections();
     loadFamiliarRadios();
     loadRadiosOnline(music_api);
+    loadGenresList();
 }
 
 // -------------------------
@@ -46,7 +45,7 @@ void User_Data::UserDataManager::saveFamiliarRadios()
     watcher->setFuture(future);
 }
 
-void User_Data::UserDataManager::saveLikedDownlaodedSongs()
+void User_Data::UserDataManager::saveLikedDownloadedSongs()
 {
     QString path = Paths::likedAndDownloadsSongsPath();
 
@@ -182,6 +181,30 @@ void User_Data::UserDataManager::saveFamiliarCollections()
             emit familiarCollectionsSaved();
         } else {
             emit error("Error while saving familiarCollections");
+        }
+    });
+
+    watcher->setFuture(future);
+}
+
+void User_Data::UserDataManager::saveGenresList()
+{
+    QString path = Paths::genresPath();
+    const QVector<Genre::GenreItem> genres_copy = this->genres_list_;
+
+    auto future = QtConcurrent::run([this, path, genres_copy]() -> bool {
+        return loader_.saveMusicItems(path, genres_copy);
+    });
+
+    auto* watcher = new QFutureWatcher<bool>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        bool result = watcher->result();
+
+        if (result) {
+            emit genresSaved();
+        } else {
+            emit error("Error while saving genres");
         }
     });
 
@@ -324,9 +347,27 @@ void User_Data::UserDataManager::loadFamiliarCollections()
     watcher->setFuture(future);
 }
 
+void User_Data::UserDataManager::loadGenresList()
+{
+    QString path = Paths::genresPath();
+    auto future = QtConcurrent::run([this, path]() -> QVector<Genre::GenreItem> {
+        return loader_.loadMusicItems<Genre::GenreItem>(path);
+    });
+
+    auto* watcher = new QFutureWatcher<QVector<Genre::GenreItem>>(this);
+    QObject::connect(watcher, &QFutureWatcherBase::finished, this, [this, watcher]() {
+        watcher->deleteLater();
+        this->genres_list_ = watcher->result();
+
+        emit genresLoaded();
+    });
+
+    watcher->setFuture(future);
+}
+
 void User_Data::UserDataManager::loadRadiosOnline(std::shared_ptr<Api::MusicApi> api)
 {
-    QObject::connect(api.get(), &Api::MusicApi::radiosListLoaded,
+    QObject::connect(api.get(), &Api::MusicApi::radiosListLoaded, this,
         [this](std::shared_ptr<QVector<Radio::RadioItem>> result) {
             if (result)
                 this->radio_stations_list_ = std::move(*result);
@@ -385,6 +426,11 @@ const QVector<Radio::RadioItem> &User_Data::UserDataManager::getRadioStationsLis
 const QVector<Song::SongItem> &User_Data::UserDataManager::getHistoryTracklist() const noexcept
 {
     return this->history_tracklist_;
+}
+
+const QVector<Genre::GenreItem> &User_Data::UserDataManager::getGenresList() const noexcept
+{
+    return this->genres_list_;
 }
 
 // -------------------------

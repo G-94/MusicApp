@@ -23,6 +23,7 @@
 #include "artistitem.h"
 #include "collectionitem.h"
 #include "albumitem.h"
+#include "genreitem.h"
 #include "userdataloader.h"
 #include "paths.h"
 
@@ -33,6 +34,9 @@ namespace User_Data {
  *
  *       TODO:
  *          ADD GENRES!!!!
+ *
+ *         CORRECT ADDERS WITH in CHECKER
+ *         CORRECT ORDER AT LIKED AND DOWNLOADED
  *
  *
  *
@@ -52,11 +56,12 @@ public:
 
     // savers async
     void saveFamiliarRadios();
-    void saveLikedDownlaodedSongs();
+    void saveLikedDownloadedSongs();
     void saveFamiliarSongs();
     void saveFamiliarArtists();
     void saveFamiliarAlbums();
     void saveFamiliarCollections();
+    void saveGenresList();
 
 private:
 
@@ -67,6 +72,7 @@ private:
     void loadFamiliarArtists();
     void loadFamiliarAlbums();
     void loadFamiliarCollections();
+    void loadGenresList();
 
 public:
 
@@ -89,6 +95,8 @@ private:
 
     const QVector<Song::SongItem>& getHistoryTracklist() const noexcept;
 
+    const QVector<Genre::GenreItem>& getGenresList() const noexcept;
+
 private:
 
     User_Data::UserDataLoader loader_;
@@ -106,6 +114,8 @@ private:
     QVector<Radio::RadioItem> radio_stations_list_;
 
     QVector<Song::SongItem> history_tracklist_;
+
+    QVector<Genre::GenreItem> genres_list_;
 
 private:
 
@@ -148,6 +158,9 @@ signals:
     void familiarCollectionsSaved();
 
     void radiosOnlineLoaded();
+
+    void genresLoaded();
+    void genresSaved();
 
     void error(QString msg);
 };
