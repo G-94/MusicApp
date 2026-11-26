@@ -65,8 +65,25 @@ public:
 
 private:
 
+    //getters
+    const QVector<Song::SongItem>& getFamiliarTracklist() const noexcept;
+    const QVector<Song::SongItem>& getLikedTracklist() const noexcept;
+    const QVector<Song::SongItem>& getDownloadedTracklist() const noexcept;
+
+    const QVector<Artists::ArtistItem>& getFamiliarArtists() const noexcept;
+    const QVector<Album::AlbumItem>& getFamiliarAlbums() const noexcept;
+    const QVector<Collection::CollectionItem>& getFamiliarCollections() const noexcept;
+
+    const QVector<Radio::RadioItem>& getFamiliarRadios() const noexcept;
+    const QVector<Radio::RadioItem>& getRadioStationsList() const noexcept;
+
+    const QVector<Song::SongItem>& getHistoryTracklist() const noexcept;
+
+private:
+
     User_Data::UserDataLoader loader_;
 
+    // player's states
     QVector<Song::SongItem> familiar_tracklist_;
     QVector<Song::SongItem> liked_tracklist_;
     QVector<Song::SongItem> downloaded_tracklist_;
@@ -77,6 +94,8 @@ private:
 
     QVector<Radio::RadioItem> familiar_radios_;
     QVector<Radio::RadioItem> radio_stations_list_;
+
+    QVector<Song::SongItem> history_tracklist_;
 
 private:
 
@@ -92,6 +111,7 @@ public:
     void addFamiliarAlbum(const Album::AlbumItem& album);
     void addFamiliarCollection(const Collection::CollectionItem& collection);
     void addFamiliarRadio(const Radio::RadioItem& radio);
+    void addSongToHistory(const Song::SongItem& song);
 
     // removers
     bool removeSongFromLiked(const Song::SongItem& song);
