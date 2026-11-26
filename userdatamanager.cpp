@@ -5,9 +5,15 @@ User_Data::UserDataManager::UserDataManager()
 
 }
 
-void User_Data::UserDataManager::preloadUserData()
+void User_Data::UserDataManager::preloadUserData(std::shared_ptr<Api::MusicApi> music_api)
 {
-
+    loadLikedDownloadedSongs();
+    loadFamiliarSongs();
+    loadFamiliarAlbums();
+    loadFamiliarArtists();
+    loadFamiliarCollections();
+    loadFamiliarRadios();
+    loadRadiosOnline(music_api);
 }
 
 // -------------------------

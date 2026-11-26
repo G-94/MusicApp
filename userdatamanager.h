@@ -28,6 +28,16 @@
 
 namespace User_Data {
 
+/*
+ *
+ *
+ *       TODO:
+ *          ADD GENRES!!!!
+ *
+ *
+ *
+*/
+
 class UserDataManager final : public QObject
 {
 
@@ -36,7 +46,7 @@ public:
     UserDataManager();
 
     //async func that loads all user data
-    void preloadUserData();
+    void preloadUserData(std::shared_ptr<Api::MusicApi> music_api);
 
 public:
 
