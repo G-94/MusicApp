@@ -248,7 +248,7 @@ void Api::MusicApi::fetchRadiosPages(QUrl url, RadiosVectorPtr accumulator, int 
             emit loadingRadiosFailed(e.what());
         }
 
-        if (onlyOne or page > 1000) {
+        if (onlyOne or page > HTTP_Literals::MAX_RADIOS) {
             emit radiosListLoaded(accumulator);
             return;
         }

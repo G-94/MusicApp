@@ -19,6 +19,7 @@ inline const QString PAGE_BASE = QStringLiteral("/start/");
 inline const int PAGE_STEP = 48;
 
 inline const QString RADIO_BASE = QStringLiteral("https://ru.hitmox.net/radio");
+inline const int MAX_RADIOS = 700;
 
 inline const QString EMPTY_PAGE_STR = QStringLiteral("---");
 
