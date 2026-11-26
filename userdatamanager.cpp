@@ -10,6 +10,12 @@ void User_Data::UserDataManager::preloadUserData()
 
 }
 
+// -------------------------
+//
+//         savers
+//
+// -------------------------
+
 void User_Data::UserDataManager::saveFamiliarRadios()
 {
     QString path = Paths::familiarRadiosPath();
@@ -176,6 +182,12 @@ void User_Data::UserDataManager::saveFamiliarCollections()
     watcher->setFuture(future);
 }
 
+// -------------------------
+//
+//         loaders
+//
+// -------------------------
+
 void User_Data::UserDataManager::loadFamiliarRadios()
 {
     QString path = Paths::familiarRadiosPath();
@@ -318,6 +330,63 @@ void User_Data::UserDataManager::loadRadiosOnline(std::shared_ptr<Api::MusicApi>
     api->getRadios();
 }
 
+// -------------------------
+//
+//         getters
+//
+// -------------------------
+
+const QVector<Song::SongItem> &User_Data::UserDataManager::getFamiliarTracklist() const noexcept
+{
+    return this->familiar_tracklist_;
+}
+
+const QVector<Song::SongItem> &User_Data::UserDataManager::getLikedTracklist() const noexcept
+{
+    return this->liked_tracklist_;
+}
+
+const QVector<Song::SongItem> &User_Data::UserDataManager::getDownloadedTracklist() const noexcept
+{
+    return this->downloaded_tracklist_;
+}
+
+const QVector<Artists::ArtistItem> &User_Data::UserDataManager::getFamiliarArtists() const noexcept
+{
+    return this->familiar_artists_;
+}
+
+const QVector<Album::AlbumItem> &User_Data::UserDataManager::getFamiliarAlbums() const noexcept
+{
+    return this->familiar_albums_;
+}
+
+const QVector<Collection::CollectionItem> &User_Data::UserDataManager::getFamiliarCollections() const noexcept
+{
+    return this->familiar_collections_;
+}
+
+const QVector<Radio::RadioItem> &User_Data::UserDataManager::getFamiliarRadios() const noexcept
+{
+    return this->familiar_radios_;
+}
+
+const QVector<Radio::RadioItem> &User_Data::UserDataManager::getRadioStationsList() const noexcept
+{
+    return this->radio_stations_list_;
+}
+
+const QVector<Song::SongItem> &User_Data::UserDataManager::getHistoryTracklist() const noexcept
+{
+    return this->history_tracklist_;
+}
+
+// -------------------------
+//
+//         adders
+//
+// -------------------------
+
 void User_Data::UserDataManager::addLikedSong(const Song::SongItem &song)
 {
     this->liked_tracklist_.append(song);
@@ -352,6 +421,17 @@ void User_Data::UserDataManager::addFamiliarRadio(const Radio::RadioItem &radio)
 {
     this->familiar_radios_.append(radio);
 }
+
+void User_Data::UserDataManager::addSongToHistory(const Song::SongItem &song)
+{
+    this->history_tracklist_.append(song);
+}
+
+// -------------------------
+//
+//         removers
+//
+// -------------------------
 
 bool User_Data::UserDataManager::removeSongFromLiked(const Song::SongItem &song)
 {
