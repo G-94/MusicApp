@@ -22,7 +22,7 @@
 
 namespace Collection {
 
-class CollectionItem final : MusicItem::MusicItem
+class CollectionItem final : public MusicItem::MusicItem
 {
 public:
     explicit CollectionItem(QString title, QString id);

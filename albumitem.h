@@ -21,7 +21,7 @@
 
 namespace Album {
 
-class AlbumItem final : MusicItem::MusicItem
+class AlbumItem final : public MusicItem::MusicItem
 {
 public:
     explicit AlbumItem(QString title, QString year, QString id);

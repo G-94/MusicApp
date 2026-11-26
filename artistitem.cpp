@@ -26,7 +26,7 @@ QJsonObject Artists::ArtistItem::toJson() const
 Artists::ArtistItem Artists::ArtistItem::fromJson(const QJsonObject &obj)
 {
     Artists::ArtistItem item {
-        obj.value("title").toString(),
+        obj.value("name").toString(),
         obj.value("id").toString(),
     };
 

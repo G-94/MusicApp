@@ -28,6 +28,7 @@ qt_add_executable(MusicApp
     networkbypass.h networkbypass.cpp
     playercontrol.h playercontrol.cpp
     userdatamanager.h userdatamanager.cpp
+    genreitem.h genreitem.cpp
 )
 
 # --- BASS: линкуемся прямо на 64-битную DLL ---
