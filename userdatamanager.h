@@ -121,6 +121,23 @@ private:
 
     // TODO: make a cache rules for songs
 
+private:
+
+    template <typename Container>
+    bool removeById(Container& container, const QString& id) {
+        auto it = std::find_if(container.begin(), container.end(),
+                               [id] (const Song::SongItem& s) {
+                                   return s.getId() == id;
+                               });
+
+        if (it == container.end()) {
+            return false;
+        }
+
+        container.remove(static_cast<qsizetype>(it - container.begin()));
+        return true;
+    }
+
 public:
 
     // adders

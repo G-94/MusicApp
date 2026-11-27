@@ -487,32 +487,10 @@ void User_Data::UserDataManager::addSongToHistory(const Song::SongItem &song)
 
 bool User_Data::UserDataManager::removeSongFromLiked(const Song::SongItem &song)
 {
-    auto it = std::find_if(this->liked_tracklist_.begin(), this->liked_tracklist_.end(),
-            [&song] (const Song::SongItem& s) {
-                return s.getId() == song.getId();
-            });
-
-    if (it == this->liked_tracklist_.end()) {
-        return false;
-    }
-
-    std::swap(*it, this->liked_tracklist_.back());
-    this->liked_tracklist_.pop_back();
-    return true;
+    return removeById(this->liked_tracklist_, song.getId());
 }
 
 bool User_Data::UserDataManager::removeSongFromDownloaded(const Song::SongItem &song)
 {
-    auto it = std::find_if(this->downloaded_tracklist_.begin(), this->downloaded_tracklist_.end(),
-            [&song] (const Song::SongItem& s) {
-                return s.getId() == song.getId();
-            });
-
-    if (it == this->downloaded_tracklist_.end()) {
-        return false;
-    }
-
-    std::swap(*it, this->downloaded_tracklist_.back());
-    this->downloaded_tracklist_.pop_back();
-    return true;
+    return removeById(this->downloaded_tracklist_, song.getId());
 }
