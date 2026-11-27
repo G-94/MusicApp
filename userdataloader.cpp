@@ -32,7 +32,7 @@ bool User_Data::UserDataLoader::save(const QString &path, const QJsonObject& dat
     QSaveFile file(path);
     if (not file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qDebug() << "error saving on openning file " << path;
-        return {};
+        return false;
     }
 
     const QJsonDocument doc(data);

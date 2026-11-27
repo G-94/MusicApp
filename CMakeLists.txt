@@ -29,6 +29,7 @@ qt_add_executable(MusicApp
     playercontrol.h playercontrol.cpp
     userdatamanager.h userdatamanager.cpp
     genreitem.h genreitem.cpp
+    FileManager.h FileManager.cpp
 )
 
 # --- BASS: линкуемся прямо на 64-битную DLL ---

@@ -22,11 +22,6 @@
 #include <type_traits>
 
 #include "musicitem.h"
-#include "songitem.h"
-#include "radioitem.h"
-#include "albumitem.h"
-#include "artistitem.h"
-#include "collectionitem.h"
 
 namespace User_Data {
 
@@ -71,11 +66,7 @@ public:
         QJsonObject obj;
         obj["items"] = arr;
 
-        if(not save(path, obj)) {
-            return false;
-        }
-
-        return true;
+        return save(path, obj);
     }
 
 };
