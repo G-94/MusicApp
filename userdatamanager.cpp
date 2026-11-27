@@ -441,41 +441,49 @@ const QVector<Genre::GenreItem> &User_Data::UserDataManager::getGenresList() con
 
 void User_Data::UserDataManager::addLikedSong(const Song::SongItem &song)
 {
+    if (checkInCollectionById(this->liked_tracklist_, song)) return;
     this->liked_tracklist_.append(song);
 }
 
 void User_Data::UserDataManager::addDownloadedSong(const Song::SongItem &song)
 {
+    if (checkInCollectionById(this->downloaded_tracklist_, song)) return;
     this->downloaded_tracklist_.append(song);
 }
 
 void User_Data::UserDataManager::addFamiliarSong(const Song::SongItem &song)
 {
+    if (checkInCollectionById(this->familiar_tracklist_, song)) return;
     this->familiar_tracklist_.append(song);
 }
 
 void User_Data::UserDataManager::addFamiliarArtist(const Artists::ArtistItem &artist)
 {
+    if (checkInCollectionById(this->familiar_artists_, artist)) return;
     this->familiar_artists_.append(artist);
 }
 
 void User_Data::UserDataManager::addFamiliarAlbum(const Album::AlbumItem &album)
 {
+    if (checkInCollectionById(this->familiar_albums_, album)) return;
     this->familiar_albums_.append(album);
 }
 
 void User_Data::UserDataManager::addFamiliarCollection(const Collection::CollectionItem &collection)
 {
+    if (checkInCollectionById(this->familiar_collections_, collection)) return;
     this->familiar_collections_.append(collection);
 }
 
 void User_Data::UserDataManager::addFamiliarRadio(const Radio::RadioItem &radio)
 {
+    if (checkInCollectionById(this->familiar_radios_, radio)) return;
     this->familiar_radios_.append(radio);
 }
 
 void User_Data::UserDataManager::addSongToHistory(const Song::SongItem &song)
 {
+    if (checkInCollectionById(this->history_tracklist_, song)) return;
     this->history_tracklist_.append(song);
 }
 

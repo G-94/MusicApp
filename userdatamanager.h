@@ -124,11 +124,20 @@ private:
 private:
 
     template <typename Container>
+    bool checkInCollectionById(const Container& container, const typename Container::value_type& item) {
+        const QString& id = item.getId();
+        return std::find_if(container.begin(), container.end(), [&id](const auto& it) {
+                return it.getId() == id;
+            }
+        ) != container.end();
+    }
+
+    template <typename Container>
     bool removeById(Container& container, const QString& id) {
         auto it = std::find_if(container.begin(), container.end(),
-                               [id] (const Song::SongItem& s) {
-                                   return s.getId() == id;
-                               });
+                [id] (const Song::SongItem& s) {
+                    return s.getId() == id;
+        });
 
         if (it == container.end()) {
             return false;
