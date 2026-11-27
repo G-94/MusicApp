@@ -1,6 +1,6 @@
 #include "userdatamanager.h"
 
-User_Data::UserDataManager::UserDataManager()
+User_Data::UserDataManager::UserDataManager(QObject *parent) : QObject(parent)
 {}
 
 void User_Data::UserDataManager::preloadUserData(std::shared_ptr<Api::MusicApi> music_api)

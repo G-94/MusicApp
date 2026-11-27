@@ -2,7 +2,11 @@
 
 -------------------------------------------------------------------------
 
+    UserDataManager class is used to manage user states like
+        current state of liked (and other user data lists)
+            tracklists what used in other parts in app
 
+    All loaders and savers works async
 
 -------------------------------------------------------------------------
 
@@ -29,25 +33,12 @@
 
 namespace User_Data {
 
-/*
- *
- *
- *       TODO:
- *          ADD GENRES!!!!
- *
- *         CORRECT ADDERS WITH in CHECKER
- *         CORRECT ORDER AT LIKED AND DOWNLOADED
- *
- *
- *
-*/
-
 class UserDataManager final : public QObject
 {
 
     Q_OBJECT
 public:
-    UserDataManager();
+    UserDataManager(QObject *parent = nullptr);
 
     //async func that loads all user data
     void preloadUserData(std::shared_ptr<Api::MusicApi> music_api);
