@@ -39,15 +39,6 @@ using RadiosVectorPtr = std::shared_ptr<QVector<Radio::RadioItem>>;
 using AlbumsVectorPtr = std::shared_ptr<QVector<Album::AlbumItem>>;
 using CollectionsVectorPtr = std::shared_ptr<QVector<Collection::CollectionItem>>;
 
-enum EMIT_TYPE {
-    QUERY_SONGS_ARTISTS_ALBUMS,
-    QUERY,
-    GENRE,
-    ARTIST,
-    ALBUM,
-    COLLECTION
-};
-
 class MusicApi final : public QObject
 {
     Q_OBJECT
@@ -85,6 +76,17 @@ signals:
     void loadingAlbumsFailed(QString msg);
     void loadingRadiosFailed(QString msg);
     void loadingCollectionsFailed(QString msg);
+
+private:
+
+    enum EMIT_TYPE {
+        QUERY_SONGS_ARTISTS_ALBUMS,
+        QUERY,
+        GENRE,
+        ARTIST,
+        ALBUM,
+        COLLECTION
+    };
 
 private:
 
