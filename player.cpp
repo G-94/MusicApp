@@ -1,6 +1,7 @@
 #include "player.h"
 
-MusicPlayer::Player::Player() : player_(nullptr), output_(nullptr), bypass_(nullptr)
+MusicPlayer::Player::Player(QObject* parent) :
+    QObject(parent), player_(nullptr), output_(nullptr), bypass_(nullptr)
 {
     player_ = new QMediaPlayer(this);
     output_ = new QAudioOutput(this);

@@ -37,7 +37,7 @@ class Player final : public QObject
 
 public:
 
-    explicit Player();
+    explicit Player(QObject* parent = nullptr);
     ~Player() override;
 
     Player(const MusicPlayer::Player&) = delete;
